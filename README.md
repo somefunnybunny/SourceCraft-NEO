@@ -7,9 +7,10 @@ it back on current TF2 one subsystem at a time. Player-facing race behavior and
 the full classic catalog are preservation targets; obsolete infrastructure may
 be replaced behind the existing race APIs.
 
-The first milestone focuses on the Engineer-centric Terran SCV and Protoss
-Probe. See [the revival bootstrap](doc/revival-bootstrap.md) for the reproducible
-build, local no-database profile, current findings, and the first runtime test.
+The first milestone focuses on the Engineer-centric Terran SCV, Protoss Probe,
+and Zerg Drone. See [the revival bootstrap](doc/revival-bootstrap.md) for the
+reproducible build, local no-database profile, current findings, and the first
+runtime test.
 
 This README would normally document whatever steps are necessary to get your application up and running.
 

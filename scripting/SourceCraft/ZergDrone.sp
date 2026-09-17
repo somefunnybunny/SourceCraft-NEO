@@ -9,6 +9,8 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <sdkhooks>
+#include <dhooks>
 #include <raytrace>
 #include <range>
 
@@ -45,7 +47,7 @@ new const String:deathWav[]     = "sc/zdrdth00.wav";
 new const String:burrowUpWav[]  = "sc/burrowup.wav";
 new const String:burrowDownWav[] = "sc/burrowdn.wav";
 
-new raceID;
+new raceID = -1;
 
 #include "sc/Mutate"
 
@@ -67,6 +69,8 @@ new g_hiveQueenRace = -1;
 new cfgMaxObjects;
 new cfgAllowSentries;
 
+DynamicHook g_CanBeUpgradedHook;
+
 public Plugin:myinfo = 
 {
     name = "SourceCraft Race - Zerg Drone",
@@ -87,8 +91,76 @@ public OnPluginStart()
 
     GetGameType();
 
+    if (GameType == tf2)
+        SetupCreepUpgradeHook();
+
     if (IsSourceCraftLoaded())
         OnSourceCraftReady();
+}
+
+SetupCreepUpgradeHook()
+{
+    GameData gameData = new GameData("sourcecraft.drone");
+    if (gameData == null)
+        SetFailState("Could not load gamedata/sourcecraft.drone.txt");
+
+    g_CanBeUpgradedHook = DynamicHook.FromConf(gameData,
+                                               "CBaseObject::CanBeUpgraded");
+    delete gameData;
+
+    if (g_CanBeUpgradedHook == null)
+        SetFailState("Could not create CBaseObject::CanBeUpgraded hook");
+
+    decl String:classname[64];
+    new maxentities = GetMaxEntities();
+    for (new entity = MaxClients + 1; entity <= maxentities; entity++)
+    {
+        if (IsValidEntity(entity) &&
+            GetEntityClassname(entity, classname, sizeof(classname)))
+        {
+            HookCreepObject(entity, classname);
+        }
+    }
+}
+
+public OnEntityCreated(entity, const String:classname[])
+{
+    if (GameType == tf2 && g_CanBeUpgradedHook != null)
+        HookCreepObject(entity, classname);
+}
+
+HookCreepObject(entity, const String:classname[])
+{
+    if (StrEqual(classname, "obj_sentrygun") ||
+        StrEqual(classname, "obj_dispenser") ||
+        StrEqual(classname, "obj_teleporter"))
+    {
+        g_CanBeUpgradedHook.HookEntity(Hook_Pre, entity,
+                                       CreepCanBeUpgraded);
+    }
+}
+
+public MRESReturn CreepCanBeUpgraded(entity, DHookReturn returnValue,
+                                     DHookParam parameters)
+{
+    if (raceID >= 0 && IsValidEntity(entity) &&
+        !GetEntProp(entity, Prop_Send, "m_bMiniBuilding"))
+    {
+        new builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
+        if (IsValidClient(builder) && GetRace(builder) == raceID &&
+            GetUpgradeLevel(builder, raceID, creepID) > 0 &&
+            (GetUpgradeLevel(builder, raceID, mutateID) > 0 ||
+             TF2_GetPlayerClass(builder) == TFClass_Engineer))
+        {
+            // Creep, rather than a player's wrench, owns the upgrade meter.
+            // Repairs and ammo refills still work because TF2 performs those
+            // before asking whether an object can be upgraded.
+            returnValue.Value = false;
+            return MRES_Supercede;
+        }
+    }
+
+    return MRES_Ignored;
 }
 
 public OnSourceCraftReady()
@@ -569,9 +641,19 @@ ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
             if (iUpgrade < TF2_MaxUpgradeMetal)
             {
                 iUpgrade += amount;
-                if (iUpgrade > TF2_MaxUpgradeMetal)
-                    iUpgrade = TF2_MaxUpgradeMetal;
-                SetEntProp(obj, Prop_Send, "m_iUpgradeMetal", iUpgrade);
+                if (iUpgrade >= TF2_MaxUpgradeMetal)
+                {
+                    // Raising the remembered highest level makes TF2's own
+                    // object think call the correct virtual StartUpgrading()
+                    // implementation. That preserves the real model,
+                    // animation, health, sound and teleporter behavior.
+                    SetEntProp(obj, Prop_Send, "m_iUpgradeMetal", 0);
+                    SetEntProp(obj, Prop_Send, "m_iHighestUpgradeLevel",
+                               iLevel + 1);
+                    FireCreepUpgradeEvent(client, obj, type);
+                }
+                else
+                    SetEntProp(obj, Prop_Send, "m_iUpgradeMetal", iUpgrade);
             }                                        
         }
 
@@ -628,6 +710,19 @@ ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
     }
 }
 
+FireCreepUpgradeEvent(client, obj, TFObjectType:type)
+{
+    new Handle:event = CreateEvent("player_upgradedobject");
+    if (event != INVALID_HANDLE)
+    {
+        SetEventInt(event, "userid", GetClientUserId(client));
+        SetEventInt(event, "object", _:type);
+        SetEventInt(event, "index", obj);
+        SetEventBool(event, "isbuilder", true);
+        FireEvent(event);
+    }
+}
+
 SetupTeleporter(client, level)
 {
     if (m_TeleporterAvailable)
@@ -669,4 +764,3 @@ EvolveHiveQueen(client)
         ChangeRace(client, g_hiveQueenRace, true, false, true);
     }
 }
-

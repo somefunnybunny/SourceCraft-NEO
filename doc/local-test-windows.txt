@@ -22,8 +22,8 @@ INSTALL
        sm plugins list
 
    ResourceManager, Advanced Infinite Ammo, SourceCraft, ShopItems, Burrow,
-   Human Alliance, Terran SCV, Protoss Probe, TF2teleporter, and amp_node
-   should all appear without an error state.
+   Human Alliance, Terran SCV, Protoss Probe, Zerg Drone, TF2teleporter, and
+   amp_node should all appear without an error state.
 
 5. Start normal TF2. In the TF2 developer console, connect with:
 
@@ -33,8 +33,9 @@ INSTALL
 
        changerace
 
-   Choose Terran SCV or Protoss Probe. Both are unlocked in this local test
-   profile; their original source requirements have not been changed.
+   Choose Terran SCV, Protoss Probe, or Zerg Drone. All three are unlocked in
+   this local test profile; their original source requirements have not been
+   changed.
 
 7. In the SERVER console, add bots with:
 
@@ -55,6 +56,9 @@ SCV has 49 levels. Probe has 33, so SourceCraft will cap the command at 33
 when Probe is selected. You can also level normally through the accelerated
 short-term progression included in this package.
 
+Drone has 27 levels. To test Creep immediately, select Drone, set its level to
+27, and buy at least one level of Creep from the upgrade menu.
+
 WHAT TO TEST FIRST
 ------------------
 
@@ -71,6 +75,13 @@ Protoss Probe:
 - Shield Batteries automatic repair
 - Engineer metal replenishment
 - Sentry shell and rocket replenishment
+
+Zerg Drone:
+
+- Creep repairs building health and restores dispenser/sentry supplies
+- Wrenches repair and resupply Creep buildings but cannot upgrade them
+- Creep grows the upgrade meter by 2/4/6/8 metal per second
+- At 200 metal, the building performs its normal automatic upgrade
 
 IF SOMETHING FAILS
 ------------------

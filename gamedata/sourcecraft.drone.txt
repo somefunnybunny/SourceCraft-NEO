@@ -1,0 +1,35 @@
+"Games"
+{
+    "tf"
+    {
+        "Offsets"
+        {
+            // Current SourceMod/TF2 vtable slot used by CBaseObject's
+            // player-aware upgrade check. Keeping this in gamedata makes a
+            // future TF2 vtable change a data update instead of a code edit.
+            "CBaseObject::CanBeUpgraded"
+            {
+                "linux"     "384"
+                "windows"   "383"
+            }
+        }
+
+        "Functions"
+        {
+            "CBaseObject::CanBeUpgraded"
+            {
+                "offset"    "CBaseObject::CanBeUpgraded"
+                "hooktype"  "entity"
+                "return"    "bool"
+                "this"      "entity"
+                "arguments"
+                {
+                    "pPlayer"
+                    {
+                        "type"  "cbaseentity"
+                    }
+                }
+            }
+        }
+    }
+}

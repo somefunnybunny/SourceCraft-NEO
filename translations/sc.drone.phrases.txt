@@ -57,7 +57,7 @@
 	}
 	"drone_creep_desc"
 	{
-		"en"		"Regenerates the Health, Metal and/or Ammo of your Structures."
+		"en"		"Grows your Structures automatically: repairs Health, restores Metal and Ammo, and evolves normal buildings without Wrench upgrades."
 	}
 	"drone_creep_image"
 	{

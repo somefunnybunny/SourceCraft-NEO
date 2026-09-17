@@ -12,6 +12,7 @@ rm -rf "${package_root}"
 mkdir -p \
     "${sm_root}/plugins" \
     "${sm_root}/configs/sc" \
+    "${sm_root}/gamedata" \
     "${sm_root}/translations"
 
 cp -a "${repo_root}/build/plugins/." "${sm_root}/plugins/"
@@ -21,6 +22,10 @@ cp "${repo_root}/configs/local-test/scv.cfg" \
    "${sm_root}/configs/sc/scv.cfg"
 cp "${repo_root}/configs/local-test/probe.cfg" \
    "${sm_root}/configs/sc/probe.cfg"
+cp "${repo_root}/configs/local-test/drone.cfg" \
+   "${sm_root}/configs/sc/drone.cfg"
+cp "${repo_root}/gamedata/sourcecraft.drone.txt" \
+   "${sm_root}/gamedata/sourcecraft.drone.txt"
 cp -a "${repo_root}/translations/." "${sm_root}/translations/"
 
 cp -a "${repo_root}/materials" "${package_root}/materials"
