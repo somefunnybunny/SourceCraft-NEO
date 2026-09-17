@@ -1,3 +1,5 @@
 *.smx
 compile.exe
 spcomp.exe
+.cache/
+build/
