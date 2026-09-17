@@ -97,3 +97,29 @@ native AIA_FillAmmo(client,slot=-1);
  * @return			none
  */
 native AIA_FillWeaponAmmo(client,weapon);
+
+/* DO NOT EDIT BELOW THIS LINE */
+
+public SharedPlugin:__pl_aia =
+{
+	name = "aia",
+	file = "AdvancedInfiniteAmmo.smx",
+#if defined REQUIRE_PLUGIN
+	required = 1,
+#else
+	required = 0,
+#endif
+};
+
+#if !defined REQUIRE_PLUGIN
+public __pl_aia_SetNTVOptional()
+{
+	MarkNativeAsOptional("AIA_HasAIA");
+	MarkNativeAsOptional("AIA_SetAIA");
+	MarkNativeAsOptional("AIA_GetAmmoFlags");
+	MarkNativeAsOptional("AIA_SetAmmoFlags");
+	MarkNativeAsOptional("AIA_Control");
+	MarkNativeAsOptional("AIA_FillAmmo");
+	MarkNativeAsOptional("AIA_FillWeaponAmmo");
+}
+#endif

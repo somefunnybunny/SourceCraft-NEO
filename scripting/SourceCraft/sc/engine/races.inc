@@ -559,12 +559,17 @@ CreateRace(const String:short[], required_level=0, tech_level=0, max_level=16,
         new raceIdent;
         if (short[0] == '\0')
             raceIdent = 0;
+        else if (!g_bSaveXP)
+            // Local sessions do not have persistent database identifiers.  The
+            // in-memory array index is stable for the life of the server and
+            // keeps race registration completely independent of SQL.
+            raceIdent = GetRaceCount();
         else if (faction <= Unassigned)
             raceIdent = LoadRaceData(short, faction, type);
         else
             raceIdent = LoadRaceIdent(short);
 
-        new bool:raceIsNew = (raceIdent < 0);
+        new bool:raceIsNew = (g_bSaveXP && raceIdent < 0);
 
         if (faction <= Unassigned)
             faction = Generic;

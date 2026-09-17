@@ -412,19 +412,26 @@ CreateShopItem(const String:short[], crystals=0, vespene=0, money=0, bool:use_pc
         if (item >= indexCount)
             PushArrayCell(shopIndex,newItem);
 
-        // Find item_ident
-        new itemIdent = LoadItemIdent(short);
-        if (itemIdent < 0 || g_bCreate || g_bUpdate)
+        // Find item_ident. Local sessions use an in-memory identifier so shop
+        // registration does not attempt to connect to a database.
+        new itemIdent;
+        if (!g_bSaveXP)
+            itemIdent = shopId;
+        else
         {
-            decl String:itemDesc[DESCRIPTION_LENGTH];
-            GetItemDescription(newItem, itemDesc, sizeof(itemDesc));
+            itemIdent = LoadItemIdent(short);
+            if (itemIdent < 0 || g_bCreate || g_bUpdate)
+            {
+                decl String:itemDesc[DESCRIPTION_LENGTH];
+                GetItemDescription(newItem, itemDesc, sizeof(itemDesc));
 
-            decl String:itemImage[NAME_STRING_LENGTH];
-            GetItemImage(newItem, itemImage, sizeof(itemImage), image);
+                decl String:itemImage[NAME_STRING_LENGTH];
+                GetItemImage(newItem, itemImage, sizeof(itemImage), image);
 
-            itemIdent = InsertItem(short, newName, itemDesc, newCategory,
-                                   required_level, crystals, vespene, max,
-                                   itemImage);
+                itemIdent = InsertItem(short, newName, itemDesc, newCategory,
+                                       required_level, crystals, vespene, max,
+                                       itemImage);
+            }
         }
 
         SetItemIdent(newItem,itemIdent);

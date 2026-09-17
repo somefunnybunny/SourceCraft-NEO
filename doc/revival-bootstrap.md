@@ -32,6 +32,7 @@ verifies its SHA-256 checksum, and builds:
 - `SourceCraft.smx`
 - `ShopItems.smx`
 - `ResourceManager.smx`
+- `AdvancedInfiniteAmmo.smx`
 - `Burrow.smx`
 - `TF2teleporter.smx`
 - `amp_node.smx`
@@ -63,8 +64,9 @@ the historical server profile are:
 ```
 
 With persistence disabled, the core now skips SQL initialization and reconnect
-attempts instead of logging a database failure every map. SourceCraft selects
-its original short-term XP tables in this mode.
+attempts, and assigns session-local identifiers while registering races and
+shop items. No SQL calls are made during local-mode startup. SourceCraft
+selects its original short-term XP tables in this mode.
 
 The packaged local profile also installs small `configs/sc/scv.cfg` and
 `configs/sc/probe.cfg` overrides that set their overall-level requirements to
@@ -79,6 +81,7 @@ abilities:
 | Plugin | First use |
 | --- | --- |
 | `ResourceManager.smx` | Required resource precache/download service used by the core and race helpers |
+| `AdvancedInfiniteAmmo.smx` | Supplies the `AIA_*` natives imported by the core, shop, SCV, and Probe |
 | `Burrow.smx` | Required shared behavior behind SCV Bunker and race-state checks |
 | `TF2teleporter.smx` | SCV Teleporter and Probe Warp Gate recharge rates |
 | `amp_node.smx` | SCV Repair Node and Amplifier objects |
