@@ -1,5 +1,16 @@
 # README #
 
+## SourceCraft NEO revival
+
+SourceCraft NEO preserves Naris's complete 2021 SourceCraft tree while bringing
+it back on current TF2 one subsystem at a time. Player-facing race behavior and
+the full classic catalog are preservation targets; obsolete infrastructure may
+be replaced behind the existing race APIs.
+
+The first milestone focuses on the Engineer-centric Terran SCV and Protoss
+Probe. See [the revival bootstrap](doc/revival-bootstrap.md) for the reproducible
+build, local no-database profile, current findings, and the first runtime test.
+
 This README would normally document whatever steps are necessary to get your application up and running.
 
 ### What is this repository for? ###
@@ -91,4 +102,3 @@ sc_buy             |Allows you to bind buying shop items.
 +item4             |Plant a tripmine if you have one
 +nade1             |Throw a frag nade if you have one
 +nade2             |Throw a special nade if you have one
-
