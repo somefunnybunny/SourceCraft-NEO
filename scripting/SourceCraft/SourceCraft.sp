@@ -215,9 +215,19 @@ public OnPluginStart()
     if (!ParseSettings())
         SetFailState("There was a failure parsing the configuration file.");
 
-    g_bDatabaseConnected = InitDatabase();
-    if (!g_bDatabaseConnected)
-        LogError("Saving DISABLED!");
+    // Local short-term mode deliberately runs without a database. Avoid
+    // opening or retrying SQL connections when persistence is disabled.
+    if (g_bSaveXP)
+    {
+        g_bDatabaseConnected = InitDatabase();
+        if (!g_bDatabaseConnected)
+            LogError("Saving DISABLED!");
+    }
+    else
+    {
+        g_bDatabaseConnected = false;
+        LogMessage("Database persistence disabled; using short-term progression.");
+    }
     
     if (!InitShopVector())
         SetFailState("There was a failure creating the shop vector.");
@@ -325,7 +335,7 @@ public OnMapStart()
         SetupSound(sndPain[i], false, DONT_DOWNLOAD, false, false);
 
     // If the database is not available
-    if (!g_bDatabaseConnected)
+    if (g_bSaveXP && !g_bDatabaseConnected)
     {
         // Retry connecting to it
         g_bDatabaseConnected = InitDatabase();
