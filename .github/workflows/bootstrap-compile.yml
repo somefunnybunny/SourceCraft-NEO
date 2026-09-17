@@ -1,0 +1,25 @@
+name: Bootstrap compile
+
+on:
+  push:
+    branches:
+      - master
+      - revival/**
+  pull_request:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out SourceCraft NEO
+        uses: actions/checkout@v4
+
+      - name: Compile core and Engineer milestone
+        run: ./tools/build-bootstrap.sh
+
+      - name: Upload compiled plugins
+        uses: actions/upload-artifact@v4
+        with:
+          name: sourcecraft-neo-bootstrap
+          path: build/plugins/*.smx
+          if-no-files-found: error
