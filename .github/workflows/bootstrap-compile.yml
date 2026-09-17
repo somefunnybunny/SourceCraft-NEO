@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Compile core and Engineer milestone
-        run: ./tools/build-bootstrap.sh
+        run: bash ./tools/build-bootstrap.sh
 
       - name: Upload compiled plugins
         uses: actions/upload-artifact@v4
