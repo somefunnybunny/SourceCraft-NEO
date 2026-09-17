@@ -31,6 +31,8 @@ verifies its SHA-256 checksum, and builds:
 
 - `SourceCraft.smx`
 - `ShopItems.smx`
+- `ResourceManager.smx`
+- `Burrow.smx`
 - `TF2teleporter.smx`
 - `amp_node.smx`
 - `HumanAlliance.smx`
@@ -76,6 +78,8 @@ abilities:
 
 | Plugin | First use |
 | --- | --- |
+| `ResourceManager.smx` | Required resource precache/download service used by the core and race helpers |
+| `Burrow.smx` | Required shared behavior behind SCV Bunker and race-state checks |
 | `TF2teleporter.smx` | SCV Teleporter and Probe Warp Gate recharge rates |
 | `amp_node.smx` | SCV Repair Node and Amplifier objects |
 | `ShopItems.smx` | Required SourceCraft shop interface used by SCV |

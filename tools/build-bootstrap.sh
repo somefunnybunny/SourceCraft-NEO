@@ -43,8 +43,10 @@ compile_plugin() {
         "${repo_root}/${source_path}"
 }
 
+compile_plugin "scripting/lib/ResourceManager.sp" "ResourceManager.smx"
 compile_plugin "scripting/SourceCraft/SourceCraft.sp" "SourceCraft.smx"
 compile_plugin "scripting/SourceCraft/ShopItems.sp" "ShopItems.smx"
+compile_plugin "scripting/SourceCraft/Burrow.sp" "Burrow.smx"
 compile_plugin "scripting/libtf2/TF2teleporter.sp" "TF2teleporter.smx"
 compile_plugin "scripting/libtf2/amp_node.sp" "amp_node.smx"
 compile_plugin "scripting/SourceCraft/HumanAlliance.sp" "HumanAlliance.smx"

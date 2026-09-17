@@ -21,8 +21,9 @@ INSTALL
 
        sm plugins list
 
-   SourceCraft, Human Alliance, Terran SCV, Protoss Probe, ShopItems,
-   TF2teleporter, and amp_node should all appear without an error state.
+   ResourceManager, SourceCraft, ShopItems, Burrow, Human Alliance,
+   Terran SCV, Protoss Probe, TF2teleporter, and amp_node should all appear
+   without an error state.
 
 5. Start normal TF2. In the TF2 developer console, connect with:
 
