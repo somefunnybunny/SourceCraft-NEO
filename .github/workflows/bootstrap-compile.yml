@@ -14,12 +14,12 @@ jobs:
       - name: Check out SourceCraft NEO
         uses: actions/checkout@v4
 
-      - name: Compile core and Engineer milestone
-        run: bash ./tools/build-bootstrap.sh
+      - name: Build local Engineer test package
+        run: bash ./tools/package-local-test.sh
 
-      - name: Upload compiled plugins
+      - name: Upload local test package
         uses: actions/upload-artifact@v4
         with:
-          name: sourcecraft-neo-bootstrap
-          path: build/plugins/*.smx
+          name: sourcecraft-neo-local-test
+          path: build/sourcecraft-neo-local-test/
           if-no-files-found: error

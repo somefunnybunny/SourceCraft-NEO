@@ -1,0 +1,87 @@
+SOURCECRAFT NEO - LOCAL ENGINEER TEST
+====================================
+
+This is an early compatibility test, not a finished release.
+
+INSTALL
+-------
+
+1. Stop the TF2 dedicated server.
+
+2. Copy everything beside this file into:
+
+       C:\TF2Server\tf
+
+   Merge folders when Windows asks. Do not delete your existing Metamod or
+   SourceMod installation.
+
+3. Start the dedicated server normally.
+
+4. In the SERVER console, check the plugins:
+
+       sm plugins list
+
+   SourceCraft, Human Alliance, Terran SCV, Protoss Probe, ShopItems,
+   TF2teleporter, and amp_node should all appear without an error state.
+
+5. Start normal TF2. In the TF2 developer console, connect with:
+
+       connect 127.0.0.1:27015
+
+6. In chat, enter:
+
+       changerace
+
+   Choose Terran SCV or Protoss Probe. Both are unlocked in this local test
+   profile; their original source requirements have not been changed.
+
+7. In the SERVER console, add bots with:
+
+       tf_bot_add 11
+
+USEFUL TEST COMMANDS
+--------------------
+
+Open the SourceCraft menu from the TF2 developer console:
+
+    sc_menu
+
+Set the current race to its maximum test level from the SERVER console:
+
+    sc_setlevel "your player name" 49
+
+SCV has 49 levels. Probe has 33, so SourceCraft will cap the command at 33
+when Probe is selected. You can also level normally through the accelerated
+short-term progression included in this package.
+
+WHAT TO TEST FIRST
+------------------
+
+Terran SCV:
+
+- Teleporter recharge upgrade
+- Repair Node building conversion
+- Building health regeneration
+- Sentry shell and rocket replenishment
+
+Protoss Probe:
+
+- Warp Gate teleporter recharge
+- Shield Batteries automatic repair
+- Engineer metal replenishment
+- Sentry shell and rocket replenishment
+
+IF SOMETHING FAILS
+------------------
+
+Run this in the SERVER console:
+
+    sm plugins list
+
+Then look in:
+
+    C:\TF2Server\tf\addons\sourcemod\logs
+
+The useful files are named errors_YYYYMMDD.log. Preserve the complete error
+message and the numbered plugin list; both identify the next compatibility
+fix far more reliably than a screenshot of the game alone.

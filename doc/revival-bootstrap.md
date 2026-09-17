@@ -33,6 +33,7 @@ verifies its SHA-256 checksum, and builds:
 - `ShopItems.smx`
 - `TF2teleporter.smx`
 - `amp_node.smx`
+- `HumanAlliance.smx`
 - `TerranSCV.smx`
 - `ProtossProbe.smx`
 
@@ -42,8 +43,11 @@ Run it from any directory:
 bash ./tools/build-bootstrap.sh
 ```
 
-Outputs are placed in `build/plugins/`. GitHub Actions runs the same build and
-publishes the six plugins as a workflow artifact.
+Outputs are placed in `build/plugins/`.
+
+`tools/package-local-test.sh` builds those plugins and assembles a complete
+drop-in test tree in `build/sourcecraft-neo-local-test/`. GitHub Actions
+publishes that tree as the `sourcecraft-neo-local-test` workflow artifact.
 
 ## Local profile
 
@@ -60,6 +64,11 @@ With persistence disabled, the core now skips SQL initialization and reconnect
 attempts instead of logging a database failure every map. SourceCraft selects
 its original short-term XP tables in this mode.
 
+The packaged local profile also installs small `configs/sc/scv.cfg` and
+`configs/sc/probe.cfg` overrides that set their overall-level requirements to
+zero. Their classic requirements of 48 and 80 remain unchanged in the race
+source. `HumanAlliance.smx` supplies the core's expected default `human` race.
+
 ## First runtime dependency slice
 
 The build deliberately includes only the helpers required by the first target
@@ -70,15 +79,22 @@ abilities:
 | `TF2teleporter.smx` | SCV Teleporter and Probe Warp Gate recharge rates |
 | `amp_node.smx` | SCV Repair Node and Amplifier objects |
 | `ShopItems.smx` | Required SourceCraft shop interface used by SCV |
+| `HumanAlliance.smx` | Safe default race for a newly connected player |
 
 SCV and Probe also detect several optional classic helper libraries. Missing
 optional libraries should disable only their related upgrades. Runtime testing
 must verify that every absent helper is marked optional correctly before the
 bootstrap package is considered playable.
 
-## Known boundary
+## Package boundary
 
-This milestone proves compilation, not current-TF2 runtime compatibility. The
-next evidence-gathering step is a clean dedicated-server boot and a captured
-SourceMod error log. That will distinguish missing optional plugins from actual
-64-bit/TF2 breakage before any helper subsystem is rewritten.
+The package includes plugins, local configuration, translations, sounds,
+materials, and models. It deliberately excludes the repository's legacy native
+extensions and old gamedata. The selected TF2 plugins use current SourceMod's
+SDKHooks and send-property support; old signatures will only be restored when
+a tested subsystem demonstrably needs them.
+
+Compilation still does not prove current-TF2 runtime compatibility. A clean
+dedicated-server boot and captured SourceMod error log will distinguish missing
+optional plugins from actual 64-bit/TF2 breakage before any helper subsystem is
+rewritten.
