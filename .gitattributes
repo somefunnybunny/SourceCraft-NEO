@@ -1,0 +1,3 @@
+# The preserved SourcePawn tree predominantly uses CRLF line endings.
+*.sp whitespace=cr-at-eol
+*.inc whitespace=cr-at-eol
