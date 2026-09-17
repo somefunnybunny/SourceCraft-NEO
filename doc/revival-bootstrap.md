@@ -39,7 +39,7 @@ verifies its SHA-256 checksum, and builds:
 Run it from any directory:
 
 ```bash
-./tools/build-bootstrap.sh
+bash ./tools/build-bootstrap.sh
 ```
 
 Outputs are placed in `build/plugins/`. GitHub Actions runs the same build and
