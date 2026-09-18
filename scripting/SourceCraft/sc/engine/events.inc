@@ -202,7 +202,7 @@ public PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBroadcast)
         Trace("Setting %d:%N's energy to %d", \
               client, ValidClientIndex(client), initial);
 
-        if (GetDatabaseLoaded(client) >= DataOK)
+        if (!g_bSaveXP || GetDatabaseLoaded(client) >= DataOK)
         {
             ShowXP(client);
             ShowCrystals(client);

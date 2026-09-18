@@ -90,11 +90,16 @@ Zerg Drone:
   4/8/12/16 health per second
 - An enemy Sapper deals at most 60% of the building's maximum health, then
   fizzles and detaches automatically
-- Creep restores dispenser/sentry supplies autonomously
-- Creep grows the upgrade meter by 2/4/6/8 metal per second
+- Creep restores dispenser/sentry supplies and grows the upgrade meter by
+  3/6/9/12 points per second
 - At 200 metal, the building performs its normal automatic upgrade
 - Carried and redeploying buildings receive no Creep repair, ammunition, or
   upgrade progress; their prior level resumes after placement
+
+The default HUD should remain visible during active rounds in local no-database
+mode. Its right block shows your current race, race and overall levels, current
+XP, XP required and remaining for the next level, crystals, +crystals, and
+Vespene. Energy, armor/shields, and exceptional health remain in the left block.
 
 For convenient ultimate keys, enter these in the TF2 developer console:
 

@@ -77,7 +77,7 @@ new g_CreepBaseMaxHealth[MAXENTITIES+1];
 new g_CreepHealthBonus[MAXENTITIES+1];
 new Float:g_CreepSapperDamage[MAXENTITIES+1];
 
-#define CREEP_SUPPLY_PER_LEVEL       2
+#define CREEP_SUPPLY_PER_LEVEL       3
 #define CREEP_REGEN_PER_LEVEL        4
 #define CREEP_HEALTH_PER_LEVEL       15
 #define CREEP_SAPPER_DAMAGE_FRACTION 0.60

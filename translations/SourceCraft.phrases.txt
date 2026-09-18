@@ -322,6 +322,26 @@
 		"#format"	"{1:d}"
 		"en"		"Experience {1}"
 	}
+	"PlayerProgressHud"
+	{
+		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d},{6:d},{7:d}"
+		"en"		"{1} - Level {2}/{3} (Overall {4})\nXP: {5}/{6} ({7} to next)"
+	}
+	"PlayerProgressMaxHud"
+	{
+		"#format"	"{1:s},{2:d},{3:d},{4:d},{5:d}"
+		"en"		"{1} - Level {2}/{3} (Overall {4})\nXP: {5} (MAX LEVEL)"
+	}
+	"PlayerResourcesHud"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"Crystals: {1} | Vespene: {2}"
+	}
+	"PlayerPResourcesHud"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"Crystals: {1} + {2} | Vespene: {3}"
+	}
 	"PlayerAccumulatedEnergy"
 	{
 		"#format"	"{1:1.0f},{2:1.0f}"

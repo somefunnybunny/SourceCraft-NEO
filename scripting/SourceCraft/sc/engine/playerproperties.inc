@@ -265,7 +265,8 @@ public Action:PlayerHUD(Handle:timer, any:userid)
             }
 
             // Update HUD
-            if (GetDatabaseLoaded(client) >= DataOK && !IsFakeClient(client))
+            if ((!g_bSaveXP || GetDatabaseLoaded(client) >= DataOK) &&
+                !IsFakeClient(client))
             {
                 if ((GameType == tf2 || GameType == hl2mp) &&
                     !GetSetting(client, Disable_HUD))
@@ -326,27 +327,58 @@ public Action:PlayerHUD(Handle:timer, any:userid)
                         ShowSyncHudText(client, m_HudSynch[2], "%t", "PlayerHealth", health);
                     }
 
-                    // Block 2
+                    // Block 2: persistent progression and resource summary.
                     x = HudPos[Block2][ws][XPos]; // 0.68
-                    y = HudPos[Block2][ws][YPos]; // 0.87
+                    y = HudPos[Block2][ws][YPos] - 0.06; // 0.81 widescreen
 
+                    if (race > 0)
+                    {
+                        new Handle:hudRace = GetRaceHandle(race);
+                        if (hudRace != INVALID_HANDLE)
+                        {
+                            decl String:hudRaceName[64];
+                            GetRaceName(hudRace, hudRaceName, sizeof(hudRaceName));
+
+                            new hudLevel = GetLevel(client, race);
+                            new hudMaxLevel = GetRaceMaxLevel(hudRace);
+                            new hudXP = GetXP(client, race);
+
+                            SetHudTextParams(x, y, 1.0, 255, 255, 128, 255);
+                            if (hudLevel < hudMaxLevel)
+                            {
+                                new requiredXP = ReqLevelXP(hudLevel + 1);
+                                new remainingXP = requiredXP - hudXP;
+                                if (remainingXP < 0)
+                                    remainingXP = 0;
+
+                                ShowSyncHudText(client, m_HudSynch[5], "%t",
+                                                "PlayerProgressHud", hudRaceName,
+                                                hudLevel, hudMaxLevel,
+                                                GetOverallLevel(client), hudXP,
+                                                requiredXP, remainingXP);
+                            }
+                            else
+                            {
+                                ShowSyncHudText(client, m_HudSynch[5], "%t",
+                                                "PlayerProgressMaxHud", hudRaceName,
+                                                hudLevel, hudMaxLevel,
+                                                GetOverallLevel(client), hudXP);
+                            }
+                        }
+                    }
+
+                    y += 0.06;
                     SetHudTextParams(x, y, 1.0, 128, 128, 255, 255);
 
-                    if (g_fEnergyFactor < 1.0 || g_fEnergyRate > 1.0)
-                    {
-                        new pcrystals = GetPCrystals(client);
-                        if (pcrystals > 0)
-                            ShowSyncHudText(client, m_HudSynch[4], "%t", "PlayerPCrystals", GetCrystals(client), pcrystals);
-                        else
-                            ShowSyncHudText(client, m_HudSynch[4], "%t", "PlayerCrystals", GetCrystals(client));
-                    }
+                    new pcrystals = GetPCrystals(client);
+                    if (pcrystals > 0)
+                        ShowSyncHudText(client, m_HudSynch[4], "%t",
+                                        "PlayerPResourcesHud", GetCrystals(client),
+                                        pcrystals, GetVespene(client));
                     else
-                        ShowSyncHudText(client, m_HudSynch[4], "%t", "PlayerCrystals", GetCrystals(client));
-
-                    //x = 0.68;
-                    y += 0.03; //y = 0.91;
-                    SetHudTextParams(x, y, 1.0, 255, 255, 128, 255);
-                    ShowSyncHudText(client, m_HudSynch[5], "%t", "PlayerVespene", GetVespene(client));
+                        ShowSyncHudText(client, m_HudSynch[4], "%t",
+                                        "PlayerResourcesHud", GetCrystals(client),
+                                        GetVespene(client));
 
                     if (m_HudMessage[client][0] != '\0')
                     {
@@ -384,8 +416,9 @@ public Action:PlayerHUD(Handle:timer, any:userid)
             }
             else
             {
-                TraceCat("HUD", "Skipping Player HUD for %L, Fake=%d, DatabaseLoaded=%d", \
-                         client, IsFakeClient(client), GetDatabaseLoaded(client));
+                TraceCat("HUD", "Skipping Player HUD for %L, Fake=%d, SaveXP=%d, DatabaseLoaded=%d", \
+                         client, IsFakeClient(client), g_bSaveXP, \
+                         GetDatabaseLoaded(client));
             }
         }
         else
