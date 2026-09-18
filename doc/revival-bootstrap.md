@@ -96,7 +96,7 @@ abilities:
 | `amp_node.smx` | SCV Repair Node and Amplifier objects |
 | `ShopItems.smx` | Required SourceCraft shop interface used by SCV |
 | `HumanAlliance.smx` | Safe default race for a newly connected player |
-| SourceMod DHooks | Prevents manual upgrades of active Creep buildings while preserving normal wrench repairs |
+| SourceMod DHooks | Makes active Creep buildings completely unwrenchable, including during construction |
 
 SCV, Probe, and Drone also detect several optional classic helper libraries.
 Missing optional libraries should disable only their related upgrades. The
@@ -129,10 +129,15 @@ related startup messages are expected.
 The package includes plugins, local configuration, translations, sounds,
 materials, and models. It deliberately excludes the repository's legacy native
 extensions and old gamedata. The single packaged `sourcecraft.drone.txt` file
-is new, narrowly scoped gamedata for the current TF2 `CanBeUpgraded` vtable
-hook. The selected TF2 plugins otherwise use current SourceMod's SDKHooks and
-send-property support; old signatures will only be restored when a tested
-subsystem demonstrably needs them.
+is new, narrowly scoped gamedata for the current TF2 `CanBeUpgraded` and
+`InputWrenchHit` vtable hooks. The latter rejects construction boosts, repair,
+resupply, upgrades, and sapper removal for active Creep structures. SDKHooks
+caps each attached Sapper at 60% maximum-health damage before it fizzles.
+Creep also grants +15 maximum health and +4 health regeneration per rank while
+retaining its original +2 supply and upgrade progress per rank. The selected
+TF2 plugins otherwise use current SourceMod's SDKHooks and send-property
+support; old signatures will only be restored when a tested subsystem
+demonstrably needs them.
 
 Compilation still does not prove current-TF2 runtime compatibility. A clean
 dedicated-server boot and captured SourceMod error log will distinguish missing

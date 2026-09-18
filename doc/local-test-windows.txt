@@ -84,8 +84,13 @@ Protoss Probe:
 
 Zerg Drone:
 
-- Creep repairs building health and restores dispenser/sentry supplies
-- Wrenches repair and resupply Creep buildings but cannot upgrade them
+- Creep buildings reject all wrench work, including construction boosts,
+  repairs, resupply, upgrades, and wrench-based sapper removal
+- Creep adds 15/30/45/60 maximum building health and regenerates
+  4/8/12/16 health per second
+- An enemy Sapper deals at most 60% of the building's maximum health, then
+  fizzles and detaches automatically
+- Creep restores dispenser/sentry supplies autonomously
 - Creep grows the upgrade meter by 2/4/6/8 metal per second
 - At 200 metal, the building performs its normal automatic upgrade
 - Carried and redeploying buildings receive no Creep repair, ammunition, or

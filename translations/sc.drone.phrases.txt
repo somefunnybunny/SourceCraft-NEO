@@ -57,7 +57,7 @@
 	}
 	"drone_creep_desc"
 	{
-		"en"		"Grows your placed Structures automatically: repairs Health, restores Metal and Ammo, and evolves normal buildings without Wrench upgrades. Pauses while a building is carried or redeploying."
+		"en"		"Grows autonomous Structures that cannot be Wrenched: adds 15 maximum Health and regenerates 4 Health per rank, restores supplies, and evolves normal buildings. Enemy Sappers fizzle after dealing at most 60% of maximum Health. Pauses while carried or redeploying."
 	}
 	"drone_creep_image"
 	{

@@ -12,6 +12,13 @@
                 "linux"     "384"
                 "windows"   "383"
             }
+            // Current CBaseObject vtable slot for the umbrella wrench path:
+            // construction, repair, resupply, upgrade, and sapper removal.
+            "CBaseObject::InputWrenchHit"
+            {
+                "linux"     "366"
+                "windows"   "364"
+            }
         }
 
         "Functions"
@@ -27,6 +34,29 @@
                     "pPlayer"
                     {
                         "type"  "cbaseentity"
+                    }
+                }
+            }
+            "CBaseObject::InputWrenchHit"
+            {
+                "offset"    "CBaseObject::InputWrenchHit"
+                "hooktype"  "entity"
+                "return"    "bool"
+                "this"      "entity"
+                "arguments"
+                {
+                    "pPlayer"
+                    {
+                        "type"  "cbaseentity"
+                    }
+                    "pWrench"
+                    {
+                        "type"  "cbaseentity"
+                    }
+                    "hitLoc"
+                    {
+                        "type"  "object"
+                        "size"  "12"
                     }
                 }
             }

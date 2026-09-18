@@ -71,6 +71,16 @@ new cfgMaxObjects;
 new cfgAllowSentries;
 
 DynamicHook g_CanBeUpgradedHook;
+DynamicHook g_InputWrenchHitHook;
+
+new g_CreepBaseMaxHealth[MAXENTITIES+1];
+new g_CreepHealthBonus[MAXENTITIES+1];
+new Float:g_CreepSapperDamage[MAXENTITIES+1];
+
+#define CREEP_SUPPLY_PER_LEVEL       2
+#define CREEP_REGEN_PER_LEVEL        4
+#define CREEP_HEALTH_PER_LEVEL       15
+#define CREEP_SAPPER_DAMAGE_FRACTION 0.60
 
 public Plugin:myinfo = 
 {
@@ -107,10 +117,15 @@ SetupCreepUpgradeHook()
 
     g_CanBeUpgradedHook = DynamicHook.FromConf(gameData,
                                                "CBaseObject::CanBeUpgraded");
+    g_InputWrenchHitHook = DynamicHook.FromConf(gameData,
+                                               "CBaseObject::InputWrenchHit");
     delete gameData;
 
     if (g_CanBeUpgradedHook == null)
         SetFailState("Could not create CBaseObject::CanBeUpgraded hook");
+
+    if (g_InputWrenchHitHook == null)
+        SetFailState("Could not create CBaseObject::InputWrenchHit hook");
 
     decl String:classname[64];
     new maxentities = GetMaxEntities();
@@ -126,8 +141,19 @@ SetupCreepUpgradeHook()
 
 public OnEntityCreated(entity, const String:classname[])
 {
-    if (GameType == tf2 && g_CanBeUpgradedHook != null)
+    if (GameType == tf2 && g_CanBeUpgradedHook != null &&
+        g_InputWrenchHitHook != null)
         HookCreepObject(entity, classname);
+}
+
+public OnEntityDestroyed(entity)
+{
+    if (entity > 0 && entity <= MAXENTITIES)
+    {
+        g_CreepBaseMaxHealth[entity] = 0;
+        g_CreepHealthBonus[entity] = 0;
+        g_CreepSapperDamage[entity] = 0.0;
+    }
 }
 
 HookCreepObject(entity, const String:classname[])
@@ -138,31 +164,129 @@ HookCreepObject(entity, const String:classname[])
     {
         g_CanBeUpgradedHook.HookEntity(Hook_Pre, entity,
                                        CreepCanBeUpgraded);
+        g_InputWrenchHitHook.HookEntity(Hook_Pre, entity,
+                                       CreepInputWrenchHit);
+        SDKHook(entity, SDKHook_OnTakeDamage, CreepObjectTakeDamage);
     }
+}
+
+bool:IsActiveCreepObject(entity, &builder, &creep_level)
+{
+    builder = 0;
+    creep_level = 0;
+
+    if (raceID < 0 || !IsValidEntity(entity))
+        return false;
+
+    builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
+    if (!IsValidClient(builder) || GetRace(builder) != raceID)
+        return false;
+
+    creep_level = GetUpgradeLevel(builder, raceID, creepID);
+    return creep_level > 0 &&
+           (GetUpgradeLevel(builder, raceID, mutateID) > 0 ||
+            TF2_GetPlayerClass(builder) == TFClass_Engineer);
 }
 
 public MRESReturn CreepCanBeUpgraded(entity, DHookReturn returnValue,
                                      DHookParam parameters)
 {
-    if (raceID >= 0 && IsValidEntity(entity) &&
-        !TF2_IsObjectCarried(entity) &&
-        !GetEntProp(entity, Prop_Send, "m_bMiniBuilding"))
+    new builder, creep_level;
+    if (!TF2_IsObjectCarried(entity) &&
+        !GetEntProp(entity, Prop_Send, "m_bMiniBuilding") &&
+        IsActiveCreepObject(entity, builder, creep_level))
     {
-        new builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
-        if (IsValidClient(builder) && GetRace(builder) == raceID &&
-            GetUpgradeLevel(builder, raceID, creepID) > 0 &&
-            (GetUpgradeLevel(builder, raceID, mutateID) > 0 ||
-             TF2_GetPlayerClass(builder) == TFClass_Engineer))
-        {
-            // Creep, rather than a player's wrench, owns the upgrade meter.
-            // Repairs and ammo refills still work because TF2 performs those
-            // before asking whether an object can be upgraded.
-            returnValue.Value = false;
-            return MRES_Supercede;
-        }
+        returnValue.Value = false;
+        return MRES_Supercede;
     }
 
     return MRES_Ignored;
+}
+
+public MRESReturn CreepInputWrenchHit(entity, DHookReturn returnValue,
+                                     DHookParam parameters)
+{
+    new builder, creep_level;
+    if (IsActiveCreepObject(entity, builder, creep_level))
+    {
+        // Creep structures are autonomous organisms. Blocking the complete
+        // wrench input rejects construction boosts, repairs, resupply,
+        // upgrades, and wrench-based sapper removal alike.
+        returnValue.Value = false;
+        return MRES_Supercede;
+    }
+
+    return MRES_Ignored;
+}
+
+GetSapperEntity(attacker, inflictor, victim)
+{
+    new sapper = IsSapperEntity(inflictor) ? inflictor :
+                 (IsSapperEntity(attacker) ? attacker : -1);
+
+    if (sapper > 0 &&
+        GetEntPropEnt(sapper, Prop_Send, "m_hBuiltOnEntity") == victim)
+        return sapper;
+
+    return -1;
+}
+
+bool:IsSapperEntity(entity)
+{
+    if (entity <= MaxClients || entity > MAXENTITIES ||
+        !IsValidEntity(entity))
+        return false;
+
+    decl String:classname[32];
+    return GetEntityClassname(entity, classname, sizeof(classname)) &&
+           StrEqual(classname, "obj_attachment_sapper");
+}
+
+public Action:CreepObjectTakeDamage(victim, &attacker, &inflictor,
+                                    &Float:damage, &damagetype, &weapon,
+                                    Float:damageForce[3],
+                                    Float:damagePosition[3])
+{
+    new builder, creep_level;
+    if (!IsActiveCreepObject(victim, builder, creep_level))
+        return Plugin_Continue;
+
+    new sapper = GetSapperEntity(attacker, inflictor, victim);
+    if (sapper < 0)
+        return Plugin_Continue;
+
+    new max_health = GetEntProp(victim, Prop_Data, "m_iMaxHealth");
+    new Float:max_damage = float(max_health) * CREEP_SAPPER_DAMAGE_FRACTION;
+    new Float:remaining = max_damage - g_CreepSapperDamage[sapper];
+
+    if (remaining <= 0.0)
+    {
+        damage = 0.0;
+        CreateTimer(0.0, FizzleCreepSapper, EntIndexToEntRef(sapper),
+                    TIMER_FLAG_NO_MAPCHANGE);
+        return Plugin_Changed;
+    }
+
+    if (damage >= remaining)
+    {
+        damage = remaining;
+        g_CreepSapperDamage[sapper] = max_damage;
+        CreateTimer(0.0, FizzleCreepSapper, EntIndexToEntRef(sapper),
+                    TIMER_FLAG_NO_MAPCHANGE);
+        return Plugin_Changed;
+    }
+
+    g_CreepSapperDamage[sapper] += damage;
+    return Plugin_Continue;
+}
+
+public Action:FizzleCreepSapper(Handle:timer, any:reference)
+{
+    new sapper = EntRefToEntIndex(reference);
+    if (IsSapperEntity(sapper))
+        AcceptEntityInput(sapper, "Kill");
+
+    return Plugin_Stop;
 }
 
 public OnSourceCraftReady()
@@ -335,6 +459,13 @@ public OnLibraryRemoved(const String:name[])
 
 public OnMapStart()
 {
+    for (new entity = 0; entity <= MAXENTITIES; entity++)
+    {
+        g_CreepBaseMaxHealth[entity] = 0;
+        g_CreepHealthBonus[entity] = 0;
+        g_CreepSapperDamage[entity] = 0.0;
+    }
+
     SetupRedGlow();
     SetupBlueGlow();
     SetupSmokeSprite();
@@ -356,6 +487,17 @@ public OnMapEnd()
     ResetAllClientTimers();
 }
 
+public OnPluginEnd()
+{
+    // Avoid stacking maximum-health bonuses if the race plugin is reloaded
+    // while a map and its buildings are still live.
+    for (new client = 1; client <= MaxClients; client++)
+    {
+        if (IsValidClient(client))
+            RemoveCreepHealthBonuses(client);
+    }
+}
+
 public OnClientDisconnect(client)
 {
     KillClientTimer(client);
@@ -366,6 +508,7 @@ public Action:OnRaceDeselected(client,oldrace,newrace)
     if (oldrace == raceID)
     {
         KillClientTimer(client);
+        RemoveCreepHealthBonuses(client);
 
         SetHealthRegen(client, 0.0);
         ResetArmor(client);
@@ -464,7 +607,10 @@ public OnUpgradeLevelChanged(client,race,upgrade,new_level)
                 }
             }
             else
+            {
                 KillClientTimer(client);
+                RemoveCreepHealthBonuses(client);
+            }
         }
     }
 }
@@ -617,20 +763,25 @@ public Action:CreepTimer(Handle:timer, any:userid)
                 (GetUpgradeLevel(client,raceID,mutateID) ||
                  TF2_GetPlayerClass(client) == TFClass_Engineer))
             {
-                new obj, amount = creep_level * 2;
+                new obj;
+                new supply_amount = creep_level * CREEP_SUPPLY_PER_LEVEL;
+                new regen_amount = creep_level * CREEP_REGEN_PER_LEVEL;
                 while ((obj = FindEntityByClassname(obj, "obj_sentrygun")) != -1)
                 {
-                    ReplenishObject(client, obj, TFObject_Sentry, amount, creep_level);
+                    ReplenishObject(client, obj, TFObject_Sentry,
+                                    supply_amount, regen_amount, creep_level);
                 }
 
                 while ((obj = FindEntityByClassname(obj, "obj_teleporter")) != -1)
                 {
-                    ReplenishObject(client, obj, TFObject_Teleporter, amount, creep_level);
+                    ReplenishObject(client, obj, TFObject_Teleporter,
+                                    supply_amount, regen_amount, creep_level);
                 }
 
                 while ((obj = FindEntityByClassname(obj, "obj_dispenser")) != -1)
                 {
-                    ReplenishObject(client, obj, TFObject_Dispenser, amount, creep_level);
+                    ReplenishObject(client, obj, TFObject_Dispenser,
+                                    supply_amount, regen_amount, creep_level);
                 }
             }
         }
@@ -638,12 +789,15 @@ public Action:CreepTimer(Handle:timer, any:userid)
     return Plugin_Continue;
 }
 
-ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
+ReplenishObject(client, obj, TFObjectType:type, supply_amount,
+                regen_amount, num_rockets)
 {
     if (!TF2_IsObjectCarried(obj) &&
         GetEntPropEnt(obj, Prop_Send, "m_hBuilder") == client &&
         GetEntPropFloat(obj, Prop_Send, "m_flPercentageConstructed") >= 1.0)
     {
+        ApplyCreepHealthBonus(obj, GetUpgradeLevel(client, raceID, creepID));
+
         new iLevel = GetEntProp(obj, Prop_Send, "m_bMiniBuilding") ? 0 : 
                      GetEntProp(obj, Prop_Send, "m_iUpgradeLevel");
 
@@ -652,7 +806,7 @@ ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
             new iUpgrade = GetEntProp(obj, Prop_Send, "m_iUpgradeMetal");
             if (iUpgrade < TF2_MaxUpgradeMetal)
             {
-                iUpgrade += amount;
+                iUpgrade += supply_amount;
                 if (iUpgrade >= TF2_MaxUpgradeMetal)
                 {
                     // Raising the remembered highest level makes TF2's own
@@ -673,7 +827,7 @@ ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
         new health = GetEntProp(obj, Prop_Send, "m_iHealth");
         if (health < max_health)
         {
-            health += amount;
+            health += regen_amount;
             if (health > max_health)
                 health = max_health;
 
@@ -687,7 +841,7 @@ ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
                 new iMetal = GetEntProp(obj, Prop_Send, "m_iAmmoMetal");
                 if (iMetal < TF2_MaxDispenserMetal)
                 {
-                    iMetal += amount;
+                    iMetal += supply_amount;
                     if (iMetal > TF2_MaxDispenserMetal)
                         iMetal = TF2_MaxDispenserMetal;
                     SetEntProp(obj, Prop_Send, "m_iAmmoMetal", iMetal);
@@ -699,7 +853,7 @@ ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
                 new iShells = GetEntProp(obj, Prop_Send, "m_iAmmoShells");
                 if (iShells < maxShells)
                 {
-                    iShells += amount;
+                    iShells += supply_amount;
                     if (iShells > maxShells)
                         iShells = maxShells;
                     SetEntProp(obj, Prop_Send, "m_iAmmoShells", iShells);
@@ -719,6 +873,75 @@ ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
                 }
             }
         }
+    }
+}
+
+ApplyCreepHealthBonus(obj, creep_level)
+{
+    if (obj <= 0 || obj > MAXENTITIES)
+        return;
+
+    new desired_bonus = creep_level * CREEP_HEALTH_PER_LEVEL;
+    new current_max = GetEntProp(obj, Prop_Data, "m_iMaxHealth");
+    new stored_bonus = g_CreepHealthBonus[obj];
+    new base_max = g_CreepBaseMaxHealth[obj];
+
+    if (stored_bonus <= 0 || base_max <= 0)
+        base_max = current_max;
+    else if (current_max != base_max + stored_bonus)
+    {
+        // TF2 recalculates an object's base health when it changes level.
+        // Treat that new value as the base before restoring Creep's bonus.
+        base_max = current_max;
+    }
+
+    new desired_max = base_max + desired_bonus;
+    if (current_max != desired_max)
+    {
+        new health = GetEntProp(obj, Prop_Send, "m_iHealth");
+        new difference = desired_max - current_max;
+
+        SetEntProp(obj, Prop_Data, "m_iMaxHealth", desired_max);
+
+        if (difference > 0)
+            health += difference;
+        if (health > desired_max)
+            health = desired_max;
+
+        SetEntityHealth(obj, health);
+    }
+
+    g_CreepBaseMaxHealth[obj] = base_max;
+    g_CreepHealthBonus[obj] = desired_bonus;
+}
+
+RemoveCreepHealthBonuses(client)
+{
+    decl String:classname[32];
+    new maxentities = GetMaxEntities();
+    for (new obj = MaxClients + 1; obj <= maxentities; obj++)
+    {
+        if (g_CreepHealthBonus[obj] <= 0 || !IsValidEntity(obj) ||
+            GetEntPropEnt(obj, Prop_Send, "m_hBuilder") != client ||
+            !GetEntityClassname(obj, classname, sizeof(classname)) ||
+            (!StrEqual(classname, "obj_sentrygun") &&
+             !StrEqual(classname, "obj_dispenser") &&
+             !StrEqual(classname, "obj_teleporter")))
+            continue;
+
+        new current_max = GetEntProp(obj, Prop_Data, "m_iMaxHealth");
+        new base_max = g_CreepBaseMaxHealth[obj];
+        if (base_max > 0 &&
+            current_max == base_max + g_CreepHealthBonus[obj])
+        {
+            SetEntProp(obj, Prop_Data, "m_iMaxHealth", base_max);
+            new health = GetEntProp(obj, Prop_Send, "m_iHealth");
+            if (health > base_max)
+                SetEntityHealth(obj, base_max);
+        }
+
+        g_CreepBaseMaxHealth[obj] = 0;
+        g_CreepHealthBonus[obj] = 0;
     }
 }
 
