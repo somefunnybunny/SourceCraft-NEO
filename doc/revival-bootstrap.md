@@ -104,6 +104,13 @@ TF2 server, so the package now compiles `ammopacks_neo.sp` to `ammopacks.smx`.
 It preserves the original library/native API while removing the old entity
 output hooks, global entity cache arrays, and perpetual cache timer.
 
+Wrench alt-fire remains exclusively TF2's building pickup command. Ammopacks
+use `sm_ammopack` or `+ultimate5` for manual drops. A shared object-state guard
+also pauses Creep, Shield Batteries, Repair Nodes, and the equivalent Phase
+Prism/Hive Queen effects while a building is carried or redeploying. This keeps
+TF2's temporary carry-state level, health, and ammunition values untouched and
+prevents a carried level-three building from returning at level two.
+
 Gravity Gun and Remote remain quarantined from this Ammopacks-only diagnostic
 build until they can be tested separately. Tripmines, grenades, firemines, and
 jetpack also remain outside this slice, so their related startup messages are

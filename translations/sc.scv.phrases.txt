@@ -57,7 +57,7 @@
 	}
 	"scv_ammopack_desc"
 	{
-		"en"		"Drop Ammopacks on death. At level 2 and above, Ammopacks can be also dropped with alt fire of the wrench, sm_ammopack or +ultimate5. Engineers use metal instead of energy to drop Ammopacks."
+		"en"		"Drop Ammopacks on death. At level 2 and above, Ammopacks can also be dropped with sm_ammopack or +ultimate5. Engineers use metal instead of energy to drop Ammopacks."
 	}
 	"scv_ammopack_bind"
 	{

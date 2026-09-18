@@ -88,6 +88,20 @@ stock const TF2_SentryHealth[]     = { 100, 150, 180, 216, 8191 };
 stock const TF2_MaxUpgradeMetal    = 200;
 stock const TF2_MaxDispenserMetal  = 400;
 
+/**
+ * Returns true while TF2 has an Engineer building packed up or is restoring
+ * it after placement.  Upgrade, repair, refill and aura systems must leave the
+ * object alone during both states because TF2 temporarily rewrites its level,
+ * health and ammunition as part of the carry/redeploy transition.
+ */
+stock bool:TF2_IsObjectCarried(entity)
+{
+    return ((HasEntProp(entity, Prop_Send, "m_bCarried") &&
+             GetEntProp(entity, Prop_Send, "m_bCarried")) ||
+            (HasEntProp(entity, Prop_Send, "m_bCarryDeploy") &&
+             GetEntProp(entity, Prop_Send, "m_bCarryDeploy")));
+}
+
 stock TFExtObjectType:TF2_GetExtObjectType(entity, bool:specific=false)
 {
     decl String:class[5];

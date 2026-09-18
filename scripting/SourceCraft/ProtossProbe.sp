@@ -815,7 +815,8 @@ public Action:BatteryTimer(Handle:timer, any:userid)
                     new TFExtObjectType:type=TF2_GetExtObjectType(i);
                     if (type != TFExtObject_Unknown)
                     {
-                        if (GetEntPropEnt(i, Prop_Send, "m_hBuilder") == client &&
+                        if (!TF2_IsObjectCarried(i) &&
+                            GetEntPropEnt(i, Prop_Send, "m_hBuilder") == client &&
                             GetEntPropFloat(i, Prop_Send, "m_flPercentageConstructed") >= 1.0)
                         {
                             new iLevel = GetEntProp(i, Prop_Send, "m_iUpgradeLevel");

@@ -145,6 +145,7 @@ public MRESReturn CreepCanBeUpgraded(entity, DHookReturn returnValue,
                                      DHookParam parameters)
 {
     if (raceID >= 0 && IsValidEntity(entity) &&
+        !TF2_IsObjectCarried(entity) &&
         !GetEntProp(entity, Prop_Send, "m_bMiniBuilding"))
     {
         new builder = GetEntPropEnt(entity, Prop_Send, "m_hBuilder");
@@ -639,7 +640,8 @@ public Action:CreepTimer(Handle:timer, any:userid)
 
 ReplenishObject(client, obj, TFObjectType:type, amount, num_rockets)
 {
-    if (GetEntPropEnt(obj, Prop_Send, "m_hBuilder") == client &&
+    if (!TF2_IsObjectCarried(obj) &&
+        GetEntPropEnt(obj, Prop_Send, "m_hBuilder") == client &&
         GetEntPropFloat(obj, Prop_Send, "m_flPercentageConstructed") >= 1.0)
     {
         new iLevel = GetEntProp(obj, Prop_Send, "m_bMiniBuilding") ? 0 : 

@@ -69,8 +69,8 @@ Terran SCV:
 - Repair Node building conversion
 - Building health regeneration
 - Sentry shell and rocket replenishment
-- Ammopacks drop on death; at level 2+, use wrench alt-fire, sm_ammopack, or
-  +ultimate5 to drop one on demand
+- Ammopacks drop on death; at level 2+, use sm_ammopack or +ultimate5 to drop
+  one on demand. Wrench alt-fire remains exclusively TF2's building pickup.
 
 Protoss Probe:
 
@@ -85,6 +85,8 @@ Zerg Drone:
 - Wrenches repair and resupply Creep buildings but cannot upgrade them
 - Creep grows the upgrade meter by 2/4/6/8 metal per second
 - At 200 metal, the building performs its normal automatic upgrade
+- Carried and redeploying buildings receive no Creep repair, ammunition, or
+  upgrade progress; their prior level resumes after placement
 
 For convenient ultimate keys, enter these in the TF2 developer console:
 

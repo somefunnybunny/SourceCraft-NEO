@@ -25,7 +25,6 @@
 #define METAL_AMMO_INDEX 3
 
 new bool:g_NativeControl = false;
-new bool:g_AltFireDown[MAXPLAYERS + 1];
 new g_AmmopackMode[MAXPLAYERS + 1];
 
 public Plugin:myinfo =
@@ -66,43 +65,11 @@ public OnMapStart()
 public OnClientPutInServer(client)
 {
     g_AmmopackMode[client] = 0;
-    g_AltFireDown[client] = false;
 }
 
 public OnClientDisconnect(client)
 {
     g_AmmopackMode[client] = 0;
-    g_AltFireDown[client] = false;
-}
-
-public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3],
-                             Float:angles[3], &weapon)
-{
-    if (!(buttons & IN_ATTACK2))
-    {
-        g_AltFireDown[client] = false;
-        return Plugin_Continue;
-    }
-
-    if (g_AltFireDown[client])
-        return Plugin_Continue;
-
-    g_AltFireDown[client] = true;
-
-    if (!IsClientInGame(client) || !IsPlayerAlive(client) ||
-        TF2_GetPlayerClass(client) != TFClass_Engineer ||
-        !(GetAmmopackMode(client) & 2))
-    {
-        return Plugin_Continue;
-    }
-
-    decl String:weaponName[64];
-    GetClientWeapon(client, weaponName, sizeof(weaponName));
-    if (StrEqual(weaponName, "tf_weapon_wrench") ||
-        StrEqual(weaponName, "tf_weapon_robot_arm"))
-        DropClientAmmopack(client, -1, true);
-
-    return Plugin_Continue;
 }
 
 public Action:Command_Ammopack(client, args)

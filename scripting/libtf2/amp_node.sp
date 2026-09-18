@@ -769,7 +769,8 @@ public Action:BuildingTimer(Handle:hTimer)
                 {
                     //If Building Exists, is Active and is not Sapped
                     new ent = EntRefToEntIndex(BuildingRef[i]);
-                    if (ent > 0 && BuildingOn[ent] && BuildingType[ent] == TFExtObject_Amplifier &&
+                    if (ent > 0 && !TF2_IsObjectCarried(ent) &&
+                        BuildingOn[ent] && BuildingType[ent] == TFExtObject_Amplifier &&
                         !GetEntProp(ent, Prop_Send, "m_bHasSapper"))
                     {
                         ResetModel(ent);
@@ -1054,6 +1055,19 @@ public Action:BuildingTimer(Handle:hTimer)
             new ent = EntRefToEntIndex(ref);
             if (ent > 0 && IsValidEntity(ent))
             {
+                if (TF2_IsObjectCarried(ent))
+                {
+                    if (BuildingType[ent] == TFExtObject_RepairNode)
+                    {
+                        for (new obj=MaxClients+1; obj<maxEntities; obj++)
+                        {
+                            if (EntRefToEntIndex(RepairNodeTarget[obj]) == ent)
+                                RemoveRepairParticles(obj);
+                        }
+                    }
+                    continue;
+                }
+
                 if (BuildingOn[ent] && !GetEntProp(ent, Prop_Send, "m_bHasSapper"))
                 {
                     new metal;
@@ -1191,6 +1205,13 @@ CheckObject(client, ent, obj, Float:Pos[3], level, &metal, bool:isSentry)
 {
     if (obj != ent)
     {
+        if (TF2_IsObjectCarried(obj))
+        {
+            if (EntRefToEntIndex(RepairNodeTarget[obj]) == ent)
+                RemoveRepairParticles(obj);
+            return;
+        }
+
         if (NativeControl)
         {
             if (RepairNodeTeam[ent])
@@ -2553,4 +2574,3 @@ public Action:OnPickupObject(client, builder, ent)
     }
     return Plugin_Continue;
 }
-

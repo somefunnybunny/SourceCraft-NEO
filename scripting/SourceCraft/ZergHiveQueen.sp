@@ -617,7 +617,8 @@ public Action:CreepTimer(Handle:timer, any:userid)
                     new TFExtObjectType:type=TF2_GetExtObjectType(ent);
                     if (type != TFExtObject_Unknown)
                     {
-                        if (GetEntPropEnt(ent, Prop_Send, "m_hBuilder") == client &&
+                        if (!TF2_IsObjectCarried(ent) &&
+                            GetEntPropEnt(ent, Prop_Send, "m_hBuilder") == client &&
                             GetEntPropFloat(ent, Prop_Send, "m_flPercentageConstructed") >= 1.0)
                         {
                             if (cfgAllowSentries >= 1)
@@ -1017,4 +1018,3 @@ TunnelToIt(client, target)
                        "%t", "TargetInvalid");
     }
 }
-
