@@ -88,18 +88,28 @@ stock const TF2_SentryHealth[]     = { 100, 150, 180, 216, 8191 };
 stock const TF2_MaxUpgradeMetal    = 200;
 stock const TF2_MaxDispenserMetal  = 400;
 
+#if !defined _sourcecraft_neo_grab_state_native
+#define _sourcecraft_neo_grab_state_native
+native bool:IsObjectGrabbed(entity);
+#endif
+
 /**
- * Returns true while TF2 has an Engineer building packed up or is restoring
- * it after placement.  Upgrade, repair, refill and aura systems must leave the
- * object alone during both states because TF2 temporarily rewrites its level,
- * health and ammunition as part of the carry/redeploy transition.
+ * Returns true while TF2 has an Engineer building packed/redeploying or the
+ * NEO gravity gun owns its movement. Upgrade, repair, refill and aura systems
+ * must leave the object alone until normal placed-building state resumes.
  */
 stock bool:TF2_IsObjectCarried(entity)
 {
-    return ((HasEntProp(entity, Prop_Send, "m_bCarried") &&
-             GetEntProp(entity, Prop_Send, "m_bCarried")) ||
-            (HasEntProp(entity, Prop_Send, "m_bCarryDeploy") &&
-             GetEntProp(entity, Prop_Send, "m_bCarryDeploy")));
+    if ((HasEntProp(entity, Prop_Send, "m_bCarried") &&
+         GetEntProp(entity, Prop_Send, "m_bCarried")) ||
+        (HasEntProp(entity, Prop_Send, "m_bCarryDeploy") &&
+         GetEntProp(entity, Prop_Send, "m_bCarryDeploy")))
+    {
+        return true;
+    }
+
+    return (GetFeatureStatus(FeatureType_Native, "IsObjectGrabbed") == FeatureStatus_Available &&
+            IsObjectGrabbed(entity));
 }
 
 stock TFExtObjectType:TF2_GetExtObjectType(entity, bool:specific=false)

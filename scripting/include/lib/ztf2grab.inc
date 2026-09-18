@@ -118,6 +118,19 @@ native DropEntity(entity, Float:speed=-1.0, Float:gravity=10.0);
 native HasObject(client, bool:getref=false);
 
 /**
+ * Returns whether an entity is currently held by the gravity gun or is still
+ * settling after being dropped/thrown. SourceCraft NEO uses this to keep
+ * automatic building effects away from moving structures.
+ *
+ * @param entity    Entity index to inspect.
+ * @return          True while the gravity gun owns the entity's movement.
+ */
+#if !defined _sourcecraft_neo_grab_state_native
+#define _sourcecraft_neo_grab_state_native
+native bool:IsObjectGrabbed(entity);
+#endif
+
+/**
  * Gets called an object is picked up
  *
  * @param client:   The index of the client that used the gravgun.
@@ -189,5 +202,6 @@ public __pl_ztf2grab_SetNTVOptional()
 	MarkNativeAsOptional("DropEntity");
 	MarkNativeAsOptional("DropObject");
 	MarkNativeAsOptional("HasObject");
+	MarkNativeAsOptional("IsObjectGrabbed");
 }
 #endif

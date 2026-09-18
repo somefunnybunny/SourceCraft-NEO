@@ -214,7 +214,12 @@ public OnSourceCraftReady()
 public OnLibraryAdded(const String:name[])
 {
     if (StrEqual(name, "ztf2grab"))
-        IsGravgunAvailable(true);
+    {
+        new bool:available = IsGravgunAvailable(true);
+        if (raceID >= 0 && gravAccelID >= 0)
+            SetUpgradeDisabled(raceID, gravAccelID,
+                               !available || cfgAllowGravgun < 1);
+    }
     else if (StrEqual(name, "jetpack"))
         IsJetpackAvailable(true);
 }
@@ -222,7 +227,11 @@ public OnLibraryAdded(const String:name[])
 public OnLibraryRemoved(const String:name[])
 {
     if (StrEqual(name, "ztf2grab"))
+    {
         m_GravgunAvailable = false;
+        if (raceID >= 0 && gravAccelID >= 0)
+            SetUpgradeDisabled(raceID, gravAccelID, true);
+    }
     else if (StrEqual(name, "jetpack"))
         m_JetpackAvailable = false;
 }
@@ -969,4 +978,3 @@ YamatoCannon(client,level)
         CreateCooldown(client, raceID, yamatoID);
     }
 }
-

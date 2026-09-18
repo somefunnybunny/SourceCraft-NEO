@@ -90,6 +90,7 @@ abilities:
 | `ResourceManager.smx` | Required resource precache/download service used by the core and race helpers |
 | `AdvancedInfiniteAmmo.smx` | Supplies the `AIA_*` natives imported by the core, shop, SCV, and Probe |
 | `ammopacks.smx` | NEO replacement restoring SCV Ammopack drops on death and on command without the crashing legacy helper |
+| `ztf2grab.smx` | NEO replacement for SCV Gravity Gun and Battlecruiser Gravity Accelerator building movement |
 | `Burrow.smx` | Required shared behavior behind SCV Bunker and race-state checks |
 | `TF2teleporter.smx` | SCV Teleporter and Probe Warp Gate recharge rates |
 | `amp_node.smx` | SCV Repair Node and Amplifier objects |
@@ -111,10 +112,17 @@ Prism/Hive Queen effects while a building is carried or redeploying. This keeps
 TF2's temporary carry-state level, health, and ammunition values untouched and
 prevents a carried level-three building from returning at level two.
 
-Gravity Gun and Remote remain quarantined from this Ammopacks-only diagnostic
-build until they can be tested separately. Tripmines, grenades, firemines, and
-jetpack also remain outside this slice, so their related startup messages are
-expected.
+The package compiles `ztf2grab_neo.sp` to the classic `ztf2grab.smx` name and
+keeps its native API and permission flags. Unlike the legacy implementation,
+it uses per-client entity references plus short-lived settling timers instead
+of fixed global entity caches. SCV-held buildings are disabled while moving;
+Battlecruiser's level-three/four enabled-building permissions are preserved.
+Gravity Gun movement is also part of the shared building-state guard, so Creep,
+Shield Batteries, and Repair Nodes pause while a structure is held or settling.
+
+Remote remains quarantined until it can be modernized separately. Tripmines,
+grenades, firemines, and jetpack also remain outside this slice, so their
+related startup messages are expected.
 
 ## Package boundary
 

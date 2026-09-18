@@ -22,9 +22,9 @@ INSTALL
        sm plugins list
 
    ResourceManager, Advanced Infinite Ammo, SourceCraft NEO Ammopacks,
-   SourceCraft, ShopItems, Burrow, Human Alliance, Terran SCV, Protoss Probe,
-   Zerg Drone, TF2teleporter, and amp_node should all appear without an error
-   state.
+   SourceCraft NEO Gravity Gun, SourceCraft, ShopItems, Burrow, Human Alliance,
+   Terran SCV, Terran Battlecruiser, Protoss Probe, Zerg Drone, TF2teleporter,
+   and amp_node should all appear without an error state.
 
 5. Start normal TF2. In the TF2 developer console, connect with:
 
@@ -71,6 +71,9 @@ Terran SCV:
 - Sentry shell and rocket replenishment
 - Ammopacks drop on death; at level 2+, use sm_ammopack or +ultimate5 to drop
   one on demand. Wrench alt-fire remains exclusively TF2's building pickup.
+- Gravity Gun carries completed buildings without using TF2's native pickup.
+  SCV-held buildings remain disabled. Level 2 permits other players' buildings,
+  Level 3 permits manual wrench repairs while held, and Level 4 permits throws.
 
 Protoss Probe:
 
@@ -91,11 +94,25 @@ Zerg Drone:
 For convenient ultimate keys, enter these in the TF2 developer console:
 
     bind c +ultimate5
+    bind mouse3 +ultimate
+    bind mouse4 +grav
+    bind v +rotate
 
-Gravity Gun and Remote are quarantined from this Ammopacks-only test build.
-Tripmine, Grenade, Firemines, and Jetpack are also not part of this package
-slice yet. The related SCV, Drone, Probe, and ShopItems "not available"
-startup messages are expected and do not mean the package failed to load.
+For Gravity Gun testing, buy at least one Gravity Gun level and aim at a fully
+constructed building. Press mouse3 once to grab it; hold and release mouse3 on
+the next press to throw it when the race level permits. Mouse4 toggles a grab
+or performs a safe drop, and V rotates the held building. Automatic repair,
+refill, and upgrade effects pause until the building has landed.
+
+Battlecruiser's Gravity Accelerator uses the same controls. Its carried
+buildings remain disabled at levels 1-2, remain operational while held at level
+3, and remain operational when thrown at level 4. Ship Propulsion is expected
+to remain disabled because Jetpack is not in this package yet.
+
+Remote remains quarantined from this Gravity Gun test build. Tripmine, Grenade,
+Firemines, and Jetpack are also not part of this package slice yet. Their
+related SCV, Drone, Probe, Battlecruiser, and ShopItems "not available" startup
+messages are expected and do not mean the package failed to load.
 
 IF SOMETHING FAILS
 ------------------
