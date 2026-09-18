@@ -37,6 +37,9 @@ Drone's SourceMod 1.12 runtime hook without forcing the legacy core through the
 - `ShopItems.smx`
 - `ResourceManager.smx`
 - `AdvancedInfiniteAmmo.smx`
+- `ammopacks.smx`
+- `ztf2grab.smx`
+- `remote.smx`
 - `Burrow.smx`
 - `TF2teleporter.smx`
 - `amp_node.smx`
@@ -88,6 +91,9 @@ abilities:
 | --- | --- |
 | `ResourceManager.smx` | Required resource precache/download service used by the core and race helpers |
 | `AdvancedInfiniteAmmo.smx` | Supplies the `AIA_*` natives imported by the core, shop, SCV, and Probe |
+| `ammopacks.smx` | Restores SCV Ammopack drops on death and on command |
+| `ztf2grab.smx` | Restores SCV Gravity Gun building pickup and throwing |
+| `remote.smx` | Restores the shared building creation API used by Drone Mutate |
 | `Burrow.smx` | Required shared behavior behind SCV Bunker and race-state checks |
 | `TF2teleporter.smx` | SCV Teleporter and Probe Warp Gate recharge rates |
 | `amp_node.smx` | SCV Repair Node and Amplifier objects |
@@ -95,10 +101,12 @@ abilities:
 | `HumanAlliance.smx` | Safe default race for a newly connected player |
 | SourceMod DHooks | Prevents manual upgrades of active Creep buildings while preserving normal wrench repairs |
 
-SCV, Probe, and Drone also detect several optional classic helper libraries. Missing
-optional libraries should disable only their related upgrades. Runtime testing
-must verify that every absent helper is marked optional correctly before the
-bootstrap package is considered playable.
+SCV, Probe, and Drone also detect several optional classic helper libraries.
+Missing optional libraries should disable only their related upgrades. The race
+plugins now also re-enable Ammopack, Gravity Gun, and Mutate if their helpers
+load after the race, and disable them safely if a helper is unloaded. Tripmines
+and grenades remain intentionally outside this slice, so their related startup
+messages are expected.
 
 ## Package boundary
 

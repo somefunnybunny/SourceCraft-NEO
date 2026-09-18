@@ -62,7 +62,8 @@ new Float:g_ArmorPercent[][2]   = { {0.00, 0.00},
 new Float:g_NydusCanalRate[]    = { 0.0, 8.0, 6.0, 3.0, 1.0 };
 
 new carapaceID, regenerationID, creepID, nydusCanalID;
-new evolutionID, mutateID, burrowID, burrowStructID, hiveQueenID;
+new evolutionID, burrowID, burrowStructID, hiveQueenID;
+new mutateID = -1;
 
 new g_hiveQueenRace = -1;
 
@@ -305,7 +306,12 @@ public OnLibraryAdded(const String:name[])
     else if (StrEqual(name, "ztf2grab"))
         IsGravgunAvailable(true);
     else if (StrEqual(name, "remote"))
-        IsBuildAvailable(true);
+    {
+        new bool:available = IsBuildAvailable(true);
+        if (raceID >= 0 && mutateID >= 0)
+            SetUpgradeDisabled(raceID, mutateID,
+                               !available || GameType != tf2 || cfgAllowSentries < 1);
+    }
     else if (StrEqual(name, "amp_node"))
         IsAmpNodeAvailable(true);
 }
@@ -317,7 +323,11 @@ public OnLibraryRemoved(const String:name[])
     else if (StrEqual(name, "ztf2grab"))
         m_GravgunAvailable = false;
     else if (StrEqual(name, "remote"))
+    {
         m_BuildAvailable = false;
+        if (raceID >= 0 && mutateID >= 0)
+            SetUpgradeDisabled(raceID, mutateID, true);
+    }
     else if (StrEqual(name, "amp_node"))
         m_AmpNodeAvailable = false;
 }

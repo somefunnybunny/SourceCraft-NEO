@@ -100,8 +100,11 @@ new g_NodeShells[][]            =
 
 new g_NodeRockets[]             = { 0,  0,  0,  2, 4 };
 
-new raceID, armorID, supplyID, supplyBunkerID, ammopackID, teleporterID, immunityID;
-new amplifierID, repairNodeID, tripmineID, nadeID, gravgunID, battlecruiserID, bunkerID;
+new raceID = -1;
+new armorID, supplyID, supplyBunkerID, teleporterID, immunityID;
+new amplifierID, repairNodeID, tripmineID, nadeID, battlecruiserID, bunkerID;
+new ammopackID = -1;
+new gravgunID = -1;
 
 new g_battlecruiserRace = -1;
 
@@ -332,7 +335,11 @@ public OnLibraryAdded(const String:name[])
     else if (StrEqual(name, "tf2teleporter"))
         IsTeleporterAvailable(true);
     else if (StrEqual(name, "ammopacks"))
-        IsAmmopacksAvailable(true);
+    {
+        new bool:available = IsAmmopacksAvailable(true);
+        if (raceID >= 0 && ammopackID >= 0 && GameType == tf2)
+            SetUpgradeDisabled(raceID, ammopackID, !available);
+    }
     else if (StrEqual(name, "dodammo"))
         IsDodAmmoAvailable(true);
     else if (StrEqual(name, "tripmines"))
@@ -340,7 +347,11 @@ public OnLibraryAdded(const String:name[])
     else if (StrEqual(name, "ztf2nades"))
         IsNadesAvailable(true);
     else if (StrEqual(name, "ztf2grab"))
-        IsGravgunAvailable(true);
+    {
+        new bool:available = IsGravgunAvailable(true);
+        if (raceID >= 0 && gravgunID >= 0)
+            SetUpgradeDisabled(raceID, gravgunID, !available || !cfgAllowGravgun);
+    }
     else if (StrEqual(name, "aia"))
         IsInfiniteAmmoAvailable(true);
 }
@@ -348,7 +359,11 @@ public OnLibraryAdded(const String:name[])
 public OnLibraryRemoved(const String:name[])
 {
     if (StrEqual(name, "ammopacks"))
+    {
         m_AmmopacksAvailable = false;
+        if (raceID >= 0 && ammopackID >= 0 && GameType == tf2)
+            SetUpgradeDisabled(raceID, ammopackID, true);
+    }
     else if (StrEqual(name, "dodammo"))
         m_DodAmmoAvailable = false;
     else if (StrEqual(name, "tf2teleporter"))
@@ -358,7 +373,11 @@ public OnLibraryRemoved(const String:name[])
     else if (StrEqual(name, "ztf2nades"))
         m_NadesAvailable = false;
     else if (StrEqual(name, "ztf2grab"))
+    {
         m_GravgunAvailable = false;
+        if (raceID >= 0 && gravgunID >= 0)
+            SetUpgradeDisabled(raceID, gravgunID, true);
+    }
     else if (StrEqual(name, "amp_node"))
         m_AmpNodeAvailable = false;
     else if (StrEqual(name, "aia"))
