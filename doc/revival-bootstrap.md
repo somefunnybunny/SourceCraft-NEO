@@ -103,10 +103,11 @@ abilities:
 
 SCV, Probe, and Drone also detect several optional classic helper libraries.
 Missing optional libraries should disable only their related upgrades. The race
-plugins now also re-enable Ammopack, Gravity Gun, and Mutate if their helpers
-load after the race, and disable them safely if a helper is unloaded. Tripmines
-and grenades remain intentionally outside this slice, so their related startup
-messages are expected.
+plugins now also re-enable Ammopack, Gravity Gun, Mutate, Recall Structure, and
+Warp In Amplifier if their helpers load after the race, and disable them safely
+if a helper is unloaded. Tripmines, grenades, firemines, and jetpack remain
+intentionally outside this slice, so their related startup messages are
+expected.
 
 ## Package boundary
 

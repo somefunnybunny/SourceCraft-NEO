@@ -93,9 +93,9 @@ For convenient ultimate keys, enter these in the TF2 developer console:
     bind x +ultimate1
     bind c +ultimate5
 
-Tripmine and Grenade are not part of this package slice yet. Their two SCV
-"not available" startup messages are expected and do not mean the package
-failed to load.
+Tripmine, Grenade, Firemines, and Jetpack are not part of this package slice
+yet. The related SCV and ShopItems "not available" startup messages are
+expected and do not mean the package failed to load.
 
 IF SOMETHING FAILS
 ------------------

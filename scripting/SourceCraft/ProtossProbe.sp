@@ -76,8 +76,11 @@ new Float:g_CannonPercent[]     = { 0.0, 0.15, 0.30, 0.40, 0.50 };
 
 new m_DarkPylonAlpha[]          = { 255, 150, 100, 50, 10, 0 };
 
-new raceID, shieldsID, batteriesID, forgeID, warpGateID, cannonID;
-new recallStructureID, pylonID, amplifierID, phasePrismID;
+new raceID = -1;
+new shieldsID, batteriesID, forgeID, warpGateID, cannonID;
+new pylonID, phasePrismID;
+new recallStructureID = -1;
+new amplifierID = -1;
 
 new g_phasePrismRace = -1;
 
@@ -284,9 +287,31 @@ public OnLibraryAdded(const String:name[])
     if (StrEqual(name, "tf2teleporter"))
         IsTeleporterAvailable(true);
     else if (StrEqual(name, "remote"))
-        IsBuildAvailable(true);
+    {
+        new bool:available = IsBuildAvailable(true);
+        if (raceID >= 0 && recallStructureID >= 0)
+        {
+            SetUpgradeDisabled(raceID, recallStructureID,
+                               !available || GameType != tf2 ||
+                               !cfgAllowTeleport || cfgAllowSentries < 1);
+        }
+        if (raceID >= 0 && amplifierID >= 0)
+        {
+            SetUpgradeDisabled(raceID, amplifierID,
+                               !available || GameType != tf2 ||
+                               !IsAmpNodeAvailable());
+        }
+    }
     else if (StrEqual(name, "amp_node"))
-        IsAmpNodeAvailable(true);
+    {
+        new bool:available = IsAmpNodeAvailable(true);
+        if (raceID >= 0 && amplifierID >= 0)
+        {
+            SetUpgradeDisabled(raceID, amplifierID,
+                               !available || GameType != tf2 ||
+                               !IsRemoteAvailable());
+        }
+    }
     else if (StrEqual(name, "ztf2grab"))
         IsGravgunAvailable(true);
     else if (StrEqual(name, "aia"))
@@ -300,9 +325,19 @@ public OnLibraryRemoved(const String:name[])
     else if (StrEqual(name, "ztf2grab"))
         m_GravgunAvailable = false;
     else if (StrEqual(name, "remote"))
+    {
         m_BuildAvailable = false;
+        if (raceID >= 0 && recallStructureID >= 0)
+            SetUpgradeDisabled(raceID, recallStructureID, true);
+        if (raceID >= 0 && amplifierID >= 0)
+            SetUpgradeDisabled(raceID, amplifierID, true);
+    }
     else if (StrEqual(name, "amp_node"))
+    {
         m_AmpNodeAvailable = false;
+        if (raceID >= 0 && amplifierID >= 0)
+            SetUpgradeDisabled(raceID, amplifierID, true);
+    }
     else if (StrEqual(name, "aia"))
         m_InfiniteAmmoAvailable = false;
 }
@@ -1141,4 +1176,3 @@ public Action:OnAmplify(builder,client,TFCond:condition)
 
     return Plugin_Continue;
 }
-
