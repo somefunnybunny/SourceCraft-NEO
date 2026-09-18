@@ -21,10 +21,10 @@ INSTALL
 
        sm plugins list
 
-   ResourceManager, Advanced Infinite Ammo, Ammopacks, ZGrab:TF2, Remote
-   Control Sentries, SourceCraft, ShopItems, Burrow, Human Alliance, Terran
-   SCV, Protoss Probe, Zerg Drone, TF2teleporter, and amp_node should all
-   appear without an error state.
+   ResourceManager, Advanced Infinite Ammo, SourceCraft NEO Ammopacks,
+   SourceCraft, ShopItems, Burrow, Human Alliance, Terran SCV, Protoss Probe,
+   Zerg Drone, TF2teleporter, and amp_node should all appear without an error
+   state.
 
 5. Start normal TF2. In the TF2 developer console, connect with:
 
@@ -71,7 +71,6 @@ Terran SCV:
 - Sentry shell and rocket replenishment
 - Ammopacks drop on death; at level 2+, use wrench alt-fire, sm_ammopack, or
   +ultimate5 to drop one on demand
-- Gravity Gun grabs a building with +ultimate1; release the key to throw it
 
 Protoss Probe:
 
@@ -86,16 +85,15 @@ Zerg Drone:
 - Wrenches repair and resupply Creep buildings but cannot upgrade them
 - Creep grows the upgrade meter by 2/4/6/8 metal per second
 - At 200 metal, the building performs its normal automatic upgrade
-- Mutate opens its structure menu with +ultimate1
 
 For convenient ultimate keys, enter these in the TF2 developer console:
 
-    bind x +ultimate1
     bind c +ultimate5
 
-Tripmine, Grenade, Firemines, and Jetpack are not part of this package slice
-yet. The related SCV and ShopItems "not available" startup messages are
-expected and do not mean the package failed to load.
+Gravity Gun and Remote are quarantined from this Ammopacks-only test build.
+Tripmine, Grenade, Firemines, and Jetpack are also not part of this package
+slice yet. The related SCV, Drone, Probe, and ShopItems "not available"
+startup messages are expected and do not mean the package failed to load.
 
 IF SOMETHING FAILS
 ------------------

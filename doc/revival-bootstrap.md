@@ -38,8 +38,6 @@ Drone's SourceMod 1.12 runtime hook without forcing the legacy core through the
 - `ResourceManager.smx`
 - `AdvancedInfiniteAmmo.smx`
 - `ammopacks.smx`
-- `ztf2grab.smx`
-- `remote.smx`
 - `Burrow.smx`
 - `TF2teleporter.smx`
 - `amp_node.smx`
@@ -91,9 +89,7 @@ abilities:
 | --- | --- |
 | `ResourceManager.smx` | Required resource precache/download service used by the core and race helpers |
 | `AdvancedInfiniteAmmo.smx` | Supplies the `AIA_*` natives imported by the core, shop, SCV, and Probe |
-| `ammopacks.smx` | Restores SCV Ammopack drops on death and on command |
-| `ztf2grab.smx` | Restores SCV Gravity Gun building pickup and throwing |
-| `remote.smx` | Restores the shared building creation API used by Drone Mutate |
+| `ammopacks.smx` | NEO replacement restoring SCV Ammopack drops on death and on command without the crashing legacy helper |
 | `Burrow.smx` | Required shared behavior behind SCV Bunker and race-state checks |
 | `TF2teleporter.smx` | SCV Teleporter and Probe Warp Gate recharge rates |
 | `amp_node.smx` | SCV Repair Node and Amplifier objects |
@@ -102,11 +98,15 @@ abilities:
 | SourceMod DHooks | Prevents manual upgrades of active Creep buildings while preserving normal wrench repairs |
 
 SCV, Probe, and Drone also detect several optional classic helper libraries.
-Missing optional libraries should disable only their related upgrades. The race
-plugins now also re-enable Ammopack, Gravity Gun, Mutate, Recall Structure, and
-Warp In Amplifier if their helpers load after the race, and disable them safely
-if a helper is unloaded. Tripmines, grenades, firemines, and jetpack remain
-intentionally outside this slice, so their related startup messages are
+Missing optional libraries should disable only their related upgrades. The
+classic Ammopacks helper caused a server-process crash on the current Windows
+TF2 server, so the package now compiles `ammopacks_neo.sp` to `ammopacks.smx`.
+It preserves the original library/native API while removing the old entity
+output hooks, global entity cache arrays, and perpetual cache timer.
+
+Gravity Gun and Remote remain quarantined from this Ammopacks-only diagnostic
+build until they can be tested separately. Tripmines, grenades, firemines, and
+jetpack also remain outside this slice, so their related startup messages are
 expected.
 
 ## Package boundary

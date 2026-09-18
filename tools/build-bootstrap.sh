@@ -45,6 +45,7 @@ repo_includes="${repo_root}/scripting/include"
 sourcecraft_includes="${repo_root}/scripting/SourceCraft"
 
 mkdir -p "${output_dir}"
+rm -f "${output_dir}"/*.smx
 
 compile_plugin() {
     local source_path="$1"
@@ -61,9 +62,7 @@ compile_plugin() {
 
 compile_plugin "scripting/lib/ResourceManager.sp" "ResourceManager.smx"
 compile_plugin "scripting/libtf2/AdvancedInfiniteAmmo.sp" "AdvancedInfiniteAmmo.smx"
-compile_plugin "scripting/libtf2/ammopacks.sp" "ammopacks.smx"
-compile_plugin "scripting/lib/ztf2grab.sp" "ztf2grab.smx"
-compile_plugin "scripting/libtf2/remote.sp" "remote.smx"
+compile_plugin "scripting/libtf2/ammopacks_neo.sp" "ammopacks.smx"
 compile_plugin "scripting/SourceCraft/SourceCraft.sp" "SourceCraft.smx"
 compile_plugin "scripting/SourceCraft/ShopItems.sp" "ShopItems.smx"
 compile_plugin "scripting/SourceCraft/Burrow.sp" "Burrow.smx"
