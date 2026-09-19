@@ -36,6 +36,17 @@ jobs:
           $dumper = $dumper.Replace('net6.0-windows', 'net9.0-windows')
           Set-Content CTFAK\Plugins\Dumper\Dumper.csproj $dumper -Encoding utf8
 
+          $simple = Get-Content CTFAK\Plugins\Dumper\SimpleDumper.cs -Raw
+          $simple = $simple.Replace('var packdata = reader.getGameData().packData.Items;', 'var packdata = new List<dynamic>();')
+          Set-Content CTFAK\Plugins\Dumper\SimpleDumper.cs $simple -Encoding utf8
+
+          $sorted = Get-Content CTFAK\Plugins\Dumper\SortedImageDumper.cs -Raw
+          $sorted = $sorted.Replace('reader.getGameData().frames', 'reader.getGameData().Frames')
+          $sorted = $sorted.Replace('Settings.F3', 'Settings.gameType.HasFlag(Settings.GameType.F3)')
+          $sorted = $sorted.Replace('Settings.Android', 'Settings.gameType.HasFlag(Settings.GameType.ANDROID)')
+          $sorted = $sorted.Replace('Settings.iOS', 'Settings.gameType.HasFlag(Settings.GameType.IOS)')
+          Set-Content CTFAK\Plugins\Dumper\SortedImageDumper.cs $sorted -Encoding utf8
+
       - name: Build Dumper plugin
         shell: pwsh
         run: |
