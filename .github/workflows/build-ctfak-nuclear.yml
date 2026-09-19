@@ -23,10 +23,19 @@ jobs:
           git clone --depth 1 https://github.com/nuclearrt/CTFAK-Nuclear.git NuclearCurrent
 
           Copy-Item CTFAK\Core\CTFAK.Core\Tools\IFusionTool.cs IFusionTool.cs
+          Copy-Item CTFAK\Core\CTFAK.Core\EXE\ExeFileReader.cs ExeFileReader.cs
+          Copy-Item CTFAK\Core\CTFAK.Core\EXE\PackData.cs PackData.cs
           Remove-Item -Recurse -Force CTFAK\Core\CTFAK.Core
           Copy-Item -Recurse NuclearCurrent\Core\CTFAK.Core CTFAK\Core\CTFAK.Core
           New-Item -ItemType Directory -Force CTFAK\Core\CTFAK.Core\Tools | Out-Null
+          New-Item -ItemType Directory -Force CTFAK\Core\CTFAK.Core\EXE | Out-Null
           Copy-Item IFusionTool.cs CTFAK\Core\CTFAK.Core\Tools\IFusionTool.cs
+          Copy-Item ExeFileReader.cs CTFAK\Core\CTFAK.Core\EXE\ExeFileReader.cs
+          Copy-Item PackData.cs CTFAK\Core\CTFAK.Core\EXE\PackData.cs
+
+          $gameData = Get-Content CTFAK\Core\CTFAK.Core\CCN\GameData.cs -Raw
+          $gameData = $gameData.Replace('        public bool Exe_Only;', "        public bool Exe_Only;`r`n`r`n        public PackData packData;")
+          Set-Content CTFAK\Core\CTFAK.Core\CCN\GameData.cs $gameData -Encoding utf8
 
           $cli = Get-Content CTFAK\Interface\CTFAK.Cli\CTFAK.Cli.csproj -Raw
           $cli = $cli.Replace('net6.0-windows', 'net9.0-windows')
@@ -46,6 +55,12 @@ jobs:
           $sorted = $sorted.Replace('Settings.Android', 'Settings.gameType.HasFlag(Settings.GameType.ANDROID)')
           $sorted = $sorted.Replace('Settings.iOS', 'Settings.gameType.HasFlag(Settings.GameType.IOS)')
           Set-Content CTFAK\Plugins\Dumper\SortedImageDumper.cs $sorted -Encoding utf8
+
+          $program = Get-Content CTFAK\Interface\CTFAK.Cli\Program.cs -Raw
+          $program = $program.Replace('        CTFAK.CTFAKCore.Init();', '')
+          $program = $program.Replace('gameParser.getGameData().frames', 'gameParser.getGameData().Frames')
+          $program = $program.Replace('path = ApkFileReader.ExtractCCN(path);', 'throw new NotSupportedException("APK support is not included in this reconstructed build.");')
+          Set-Content CTFAK\Interface\CTFAK.Cli\Program.cs $program -Encoding utf8
 
       - name: Build Dumper plugin
         shell: pwsh
