@@ -1,0 +1,70 @@
+name: Build CTFAK Nuclear Hybrid
+
+on:
+  push:
+    branches:
+      - ctfak-nuclear-build-temp
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Set up .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Reconstruct CTFAK-Nuclear
+        shell: pwsh
+        run: |
+          git clone https://github.com/nuclearrt/CTFAK-Nuclear.git CTFAK
+          git -C CTFAK checkout f38ba7951f5fa9d714dc5d97772882ea6aa61717
+          git clone --depth 1 https://github.com/nuclearrt/CTFAK-Nuclear.git NuclearCurrent
+
+          Remove-Item -Recurse -Force CTFAK\Core\CTFAK.Core
+          Copy-Item -Recurse NuclearCurrent\Core\CTFAK.Core CTFAK\Core\CTFAK.Core
+
+          $cli = Get-Content CTFAK\Interface\CTFAK.Cli\CTFAK.Cli.csproj -Raw
+          $cli = $cli.Replace('net6.0-windows', 'net9.0-windows')
+          Set-Content CTFAK\Interface\CTFAK.Cli\CTFAK.Cli.csproj $cli -Encoding utf8
+
+          $dumper = Get-Content CTFAK\Plugins\Dumper\Dumper.csproj -Raw
+          $dumper = $dumper.Replace('net6.0-windows', 'net9.0-windows')
+          Set-Content CTFAK\Plugins\Dumper\Dumper.csproj $dumper -Encoding utf8
+
+      - name: Build Dumper plugin
+        shell: pwsh
+        run: |
+          dotnet build CTFAK\Plugins\Dumper\Dumper.csproj -c Release
+
+      - name: Publish self-contained CLI
+        shell: pwsh
+        run: |
+          dotnet publish CTFAK\Interface\CTFAK.Cli\CTFAK.Cli.csproj -c Release -r win-x64 --self-contained true -o publish
+
+      - name: Package Dumper and requirements
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force publish\Plugins | Out-Null
+          Copy-Item CTFAK\Plugins\Dumper\bin\Release\net9.0-windows\Dumper.dll publish\Plugins\ -Force
+          if (Test-Path CTFAK\Plugins\Dumper\bin\Release\net9.0-windows\Dumper.pdb) {
+            Copy-Item CTFAK\Plugins\Dumper\bin\Release\net9.0-windows\Dumper.pdb publish\Plugins\ -Force
+          }
+
+          Invoke-WebRequest -Uri "https://github.com/CTFAK/.github/raw/main/ctfakrequirements.zip" -OutFile requirements.zip
+          Expand-Archive requirements.zip -DestinationPath publish -Force
+
+          @"
+          This is an unofficial reconstructed CTFAK-Nuclear build.
+          CLI/plugins are from CTFAK-Nuclear commit f38ba7951f5fa9d714dc5d97772882ea6aa61717.
+          CTFAK.Core is from current CTFAK-Nuclear master at build time.
+          CLI and Dumper were retargeted to .NET 9 and the CLI was published self-contained for win-x64.
+          "@ | Set-Content publish\BUILD-NOTES.txt -Encoding utf8
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: CTFAK-Nuclear-hybrid-win-x64
+          path: publish
+          if-no-files-found: error
