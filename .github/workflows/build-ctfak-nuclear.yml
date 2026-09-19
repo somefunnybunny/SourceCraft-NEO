@@ -22,8 +22,11 @@ jobs:
           git -C CTFAK checkout f38ba7951f5fa9d714dc5d97772882ea6aa61717
           git clone --depth 1 https://github.com/nuclearrt/CTFAK-Nuclear.git NuclearCurrent
 
+          Copy-Item CTFAK\Core\CTFAK.Core\Tools\IFusionTool.cs IFusionTool.cs
           Remove-Item -Recurse -Force CTFAK\Core\CTFAK.Core
           Copy-Item -Recurse NuclearCurrent\Core\CTFAK.Core CTFAK\Core\CTFAK.Core
+          New-Item -ItemType Directory -Force CTFAK\Core\CTFAK.Core\Tools | Out-Null
+          Copy-Item IFusionTool.cs CTFAK\Core\CTFAK.Core\Tools\IFusionTool.cs
 
           $cli = Get-Content CTFAK\Interface\CTFAK.Cli\CTFAK.Cli.csproj -Raw
           $cli = $cli.Replace('net6.0-windows', 'net9.0-windows')
