@@ -13,7 +13,6 @@ WHAT IS INCLUDED
 - 31 original helper plugins
 - 15 companion plugins advertised by Crazy's Cavern
 - 138 compiled plugins in total
-- 137 active plugins; Tripmines is temporarily quarantined for crash isolation
 
 The sources are compiled with SourcePawn 1.10.0.6502 because the original code
 uses transitional syntax that the 1.12 compiler rejects. The resulting SMX
@@ -42,14 +41,6 @@ races still receive the same native interfaces and library names.
    Merge folders and replace matching SourceCraft files when Windows asks.
    Do not delete Metamod, SourceMod, SDKHooks, TF2Items, or TF2Attributes.
 
-4. Delete this old active file if it is still present from the previous test:
-
-       C:\TF2Server\tf\addons\sourcemod\plugins\tripmines.smx
-
-   Its replacement is deliberately stored under:
-
-       addons\sourcemod\plugins\disabled\sourcecraft-isolation
-
 FIRST BOOT
 ----------
 
@@ -60,8 +51,8 @@ At the SERVER console, run:
 
     sm plugins list
 
-The list should contain 137 active plugins from this package, plus SourceMod's
-own standard plugins. Preserve the entire numbered list and any red errors.
+The list should contain 138 plugins from this package, plus SourceMod's own
+standard plugins. Preserve the entire numbered list and any red error entries.
 
 The package keeps local no-database progression. Terran SCV, Protoss Probe,
 and Zerg Drone remain unlocked immediately; other directly-selectable races
@@ -78,17 +69,6 @@ TEST ORDER
 5. Try ordinary starter races before invoking exotic summons or bosses.
 6. Test one legacy helper family at a time: grenades, mines, jetpack, remote,
    Gravity Gun, boss spawning, Sidewinder, gas/TNT, and transformation skills.
-
-TRIPMINES ISOLATION TEST
-------------------------
-
-If the server reaches a stable prompt, run this at the SERVER console:
-
-    sm plugins load disabled/sourcecraft-isolation/tripmines.smx
-
-If the server immediately crashes, Tripmines is confirmed as the startup
-culprit. If it loads normally, run "sm plugins info tripmines" and report the
-result; the next post-configuration plugin becomes the likely suspect.
 
 Useful commands:
 
