@@ -12,6 +12,13 @@ and Zerg Drone. See [the revival bootstrap](doc/revival-bootstrap.md) for the
 reproducible build, local no-database profile, current findings, and the first
 runtime test.
 
+The `revival/full-catalog-baseline` branch also provides an isolated wholesale
+compatibility experiment. Run `bash tools/package-full-catalog.sh` to compile
+all 77 active races and the preserved legacy helper stack. Read
+[`doc/full-catalog-test-windows.txt`](doc/full-catalog-test-windows.txt) before
+installing it; the original Ammopacks and ZGrab implementations are included
+deliberately and must be treated as crash-testing candidates.
+
 This README would normally document whatever steps are necessary to get your application up and running.
 
 ### What is this repository for? ###

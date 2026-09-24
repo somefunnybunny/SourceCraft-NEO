@@ -1,0 +1,98 @@
+SOURCECRAFT NEO - FULL CATALOG EXPERIMENT
+========================================
+
+This branch deliberately packages the entire active 2021 SourceCraft catalog
+and the legacy helper stack observed on Crazy's Cavern. It is an experimental
+compatibility build, not a replacement for the known-good Engineer package.
+
+WHAT IS INCLUDED
+----------------
+
+- All 77 race plugins
+- All 15 SourceCraft/War3Source engine and service plugins
+- 31 original helper plugins
+- 15 companion plugins advertised by Crazy's Cavern
+- 138 compiled plugins in total
+
+The sources are compiled with SourcePawn 1.10.0.6502 because the original code
+uses transitional syntax that the 1.12 compiler rejects. The resulting SMX
+plugins are intended to run on the already-installed SourceMod 1.12 runtime.
+
+BACK UP FIRST
+-------------
+
+This experiment restores the original Ammopacks 1.4 and ZGrab 6.0 plugins.
+Those exact versions load on Crazy's Cavern, but they previously crashed our
+local environment. Keep the working local package available for rollback.
+
+1. Stop the TF2 dedicated server.
+
+2. Copy these folders somewhere safe:
+
+       C:\TF2Server\tf\addons\sourcemod\plugins
+       C:\TF2Server\tf\addons\sourcemod\configs
+       C:\TF2Server\tf\addons\sourcemod\gamedata
+
+3. Copy everything beside this file into:
+
+       C:\TF2Server\tf
+
+   Merge folders and replace matching SourceCraft files when Windows asks.
+   Do not delete Metamod, SourceMod, SDKHooks, TF2Items, or TF2Attributes.
+
+FIRST BOOT
+----------
+
+Start the dedicated server in a console window that remains visible. Do not
+use a launcher that immediately closes the window for this first experiment.
+
+At the SERVER console, run:
+
+    sm plugins list
+
+The list should contain 138 plugins from this package, plus SourceMod's own
+standard plugins. Preserve the entire numbered list and any red error entries.
+
+The package keeps local no-database progression. Terran SCV, Protoss Probe,
+and Zerg Drone remain unlocked immediately; other directly-selectable races
+retain their classic overall-level requirements. Summoned/evolved races with
+negative requirements still cannot be selected directly.
+
+TEST ORDER
+----------
+
+1. Load a quiet map and join before adding bots.
+2. Confirm the SourceCraft HUD and changerace menu appear.
+3. Verify SCV, Probe, and Drone still behave as in the stable package.
+4. Add one bot, then gradually increase the bot count.
+5. Try ordinary starter races before invoking exotic summons or bosses.
+6. Test one legacy helper family at a time: grenades, mines, jetpack, remote,
+   Gravity Gun, boss spawning, Sidewinder, gas/TNT, and transformation skills.
+
+Useful commands:
+
+    changerace
+    sc_menu
+    tf_bot_add 1
+    sm plugins list
+
+To accelerate overall progression, select a directly available race and use
+the SERVER-console admin command below, then repeat with other available races:
+
+    sc_setlevel "your player name" 49
+
+The actual maximum is capped independently by each race.
+
+IF THE SERVER CRASHES
+---------------------
+
+Restore the three backed-up SourceMod folders, or reinstall the last working
+local Engineer package. Then report:
+
+- The last visible console lines
+- Whether the crash occurred at startup, map load, spawn, or ability use
+- The last ability/helper tested
+- addons\sourcemod\logs\errors_YYYYMMDD.log, if one was produced
+
+An immediate startup crash points to a provider/helper. A crash only after an
+ability is invoked generally identifies a much narrower subsystem.

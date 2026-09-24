@@ -17,9 +17,19 @@ jobs:
       - name: Build local Engineer test package
         run: bash ./tools/package-local-test.sh
 
+      - name: Build full catalog experiment
+        run: bash ./tools/package-full-catalog.sh
+
       - name: Upload local test package
         uses: actions/upload-artifact@v4
         with:
           name: sourcecraft-neo-local-test
           path: build/sourcecraft-neo-local-test/
+          if-no-files-found: error
+
+      - name: Upload full catalog experiment
+        uses: actions/upload-artifact@v4
+        with:
+          name: sourcecraft-neo-full-catalog-test
+          path: build/sourcecraft-neo-full-catalog-test/
           if-no-files-found: error
