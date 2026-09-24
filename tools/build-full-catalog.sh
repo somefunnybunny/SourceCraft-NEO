@@ -156,7 +156,11 @@ done
 # Intentionally restrict this glob to the active directory. The repository's
 # obsolete/ subtree contains three retired race prototypes that are preserved
 # for archaeology but are not part of the 77-race catalog.
-mapfile -t race_plugins < <(rg -l 'CreateRace\(' "${repo_root}"/scripting/SourceCraft/*.sp | sort)
+if command -v rg >/dev/null 2>&1; then
+    mapfile -t race_plugins < <(rg -l 'CreateRace\(' "${repo_root}"/scripting/SourceCraft/*.sp | sort)
+else
+    mapfile -t race_plugins < <(grep -l 'CreateRace(' "${repo_root}"/scripting/SourceCraft/*.sp | sort)
+fi
 for absolute_source_path in "${race_plugins[@]}"; do
     source_path="${absolute_source_path#"${repo_root}/"}"
     output_name="$(basename "${source_path}" .sp).smx"
