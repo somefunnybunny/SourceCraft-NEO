@@ -15,6 +15,7 @@ SOURCECRAFT_LOG_DIR="${build_root}/compile-logs" \
 rm -rf "${package_root}"
 mkdir -p \
     "${sm_root}/plugins" \
+    "${sm_root}/plugins/disabled/sourcecraft-isolation" \
     "${sm_root}/configs/sc" \
     "${sm_root}/gamedata" \
     "${sm_root}/translations"
@@ -35,6 +36,18 @@ for provider in ammopacks ztf2grab; do
         exit 1
     fi
 done
+
+# tripmines is the first post-config plugin after trace.smx and is the current
+# startup-crash suspect. Keep the compiled binary in the package for an
+# explicit live-load test, but do not let SourceMod auto-load it at startup.
+mv "${sm_root}/plugins/tripmines.smx" \
+   "${sm_root}/plugins/disabled/sourcecraft-isolation/tripmines.smx"
+
+active_plugin_count="$(find "${sm_root}/plugins" -maxdepth 1 -type f -name '*.smx' | wc -l)"
+if [[ "${active_plugin_count}" -ne 137 ]]; then
+    printf 'Expected 137 active plugins but found %d.\n' "${active_plugin_count}" >&2
+    exit 1
+fi
 
 cp "${repo_root}/configs/sourcecraft.local.cfg.example" \
    "${sm_root}/configs/sourcecraft.cfg"

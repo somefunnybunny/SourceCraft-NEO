@@ -17,7 +17,9 @@ compatibility experiment. Run `bash tools/package-full-catalog.sh` to compile
 all 77 active races and the preserved helper stack. Read
 [`doc/full-catalog-test-windows.txt`](doc/full-catalog-test-windows.txt) before
 installing it. The full catalog uses the tested NEO Ammopacks and Gravity Gun
-providers in place of their crash-prone 2009 implementations.
+providers in place of their crash-prone 2009 implementations. The compiled
+Tripmines helper is temporarily packaged under `plugins/disabled` so its
+post-configuration startup crash can be tested independently.
 
 This README would normally document whatever steps are necessary to get your application up and running.
 
