@@ -21,9 +21,10 @@ plugins are intended to run on the already-installed SourceMod 1.12 runtime.
 BACK UP FIRST
 -------------
 
-This experiment restores the original Ammopacks 1.4 and ZGrab 6.0 plugins.
-Those exact versions load on Crazy's Cavern, but they previously crashed our
-local environment. Keep the working local package available for rollback.
+This package keeps the tested SourceCraft NEO Ammopacks and Gravity Gun
+providers. The original 2009 implementations were removed from this package
+after Ammopacks reproduced its startup crash in the full-catalog test. All
+races still receive the same native interfaces and library names.
 
 1. Stop the TF2 dedicated server.
 

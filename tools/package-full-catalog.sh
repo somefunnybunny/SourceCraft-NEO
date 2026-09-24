@@ -21,6 +21,21 @@ mkdir -p \
 
 cp -a "${plugin_root}/." "${sm_root}/plugins/"
 
+package_plugin_count="$(find "${sm_root}/plugins" -maxdepth 1 -type f -name '*.smx' | wc -l)"
+if [[ "${package_plugin_count}" -ne 138 ]]; then
+    printf 'Expected 138 packaged plugins but found %d.\n' "${package_plugin_count}" >&2
+    exit 1
+fi
+
+for provider in ammopacks ztf2grab; do
+    if [[ ! -f "${sm_root}/plugins/${provider}.smx" ||
+          -f "${sm_root}/plugins/${provider}_neo.smx" ]]; then
+        printf 'Provider replacement was packaged under the wrong filename: %s\n' \
+            "${provider}" >&2
+        exit 1
+    fi
+done
+
 cp "${repo_root}/configs/sourcecraft.local.cfg.example" \
    "${sm_root}/configs/sourcecraft.cfg"
 cp "${repo_root}/configs/hookgrabrope.cfg" "${sm_root}/configs/hookgrabrope.cfg"

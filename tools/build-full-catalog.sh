@@ -89,13 +89,13 @@ helper_plugins=(
     "scripting/lib/trace.sp"
     "scripting/lib/tripmines.sp"
     "scripting/lib/ubershield.sp"
-    "scripting/lib/ztf2grab.sp"
+    "scripting/lib/ztf2grab_neo.sp"
     "scripting/lib/ztf2nades.sp"
     "scripting/libtf2/FakeDeath.sp"
     "scripting/libtf2/MedicInfect.sp"
     "scripting/libtf2/MonoSpawn.sp"
     "scripting/libtf2/TF2teleporter.sp"
-    "scripting/libtf2/ammopacks.sp"
+    "scripting/libtf2/ammopacks_neo.sp"
     "scripting/libtf2/amp_node.sp"
     "scripting/libtf2/horsemann.sp"
     "scripting/libtf2/medihancer.sp"
@@ -145,6 +145,10 @@ companion_plugins=(
 
 for source_path in "${helper_plugins[@]}"; do
     output_name="$(basename "${source_path}" .sp).smx"
+    case "${output_name}" in
+        ammopacks_neo.smx) output_name="ammopacks.smx" ;;
+        ztf2grab_neo.smx) output_name="ztf2grab.smx" ;;
+    esac
     compile_plugin "${source_path}" "${output_name}"
 done
 

@@ -14,10 +14,10 @@ runtime test.
 
 The `revival/full-catalog-baseline` branch also provides an isolated wholesale
 compatibility experiment. Run `bash tools/package-full-catalog.sh` to compile
-all 77 active races and the preserved legacy helper stack. Read
+all 77 active races and the preserved helper stack. Read
 [`doc/full-catalog-test-windows.txt`](doc/full-catalog-test-windows.txt) before
-installing it; the original Ammopacks and ZGrab implementations are included
-deliberately and must be treated as crash-testing candidates.
+installing it. The full catalog uses the tested NEO Ammopacks and Gravity Gun
+providers in place of their crash-prone 2009 implementations.
 
 This README would normally document whatever steps are necessary to get your application up and running.
 
